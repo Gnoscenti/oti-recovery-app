@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status-bar notification icon: three peaks from the OTI logo, white silhouette as Android requires. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+  <path android:fillColor="#FFFFFFFF" android:pathData="M1,20 L7,9 L11,15 L14,10 L18,15 L20,12 L23,20 Z"/>
+</vector>

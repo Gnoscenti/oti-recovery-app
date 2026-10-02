@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">OTI Recovery</string>
+    <string name="title_activity_main">OTI Recovery</string>
+    <string name="package_name">org.otirecovery.app</string>
+    <string name="custom_url_scheme">org.otirecovery.app</string>
+</resources>

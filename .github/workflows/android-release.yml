@@ -1,0 +1,81 @@
+# Builds a signed Android App Bundle (AAB) and, when Play credentials are configured,
+# uploads it to the Google Play "internal" testing track.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   ANDROID_KEYSTORE_BASE64   base64 of release/oti-upload.jks  (npm run keystore prints it)
+#   ANDROID_KEYSTORE_PASSWORD
+#   ANDROID_KEY_ALIAS         oti-upload
+#   ANDROID_KEY_PASSWORD
+# Optional, enables the Play upload step:
+#   PLAY_SERVICE_ACCOUNT_JSON contents of the Play Console service-account JSON key
+#
+# Trigger: push a tag like v1.0.0, or run manually from the Actions tab.
+name: Android release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      track:
+        description: Play track to upload to
+        default: internal
+        type: choice
+        options: [internal, alpha, beta, production]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      HAS_PLAY_CREDENTIALS: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: android-actions/setup-android@v3
+      - run: npm ci
+      - run: npm run check
+      - run: npx cap sync android
+
+      - name: Decode upload keystore
+        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > ${{ runner.temp }}/upload.jks
+
+      - name: Version
+        id: version
+        run: |
+          # versionCode must increase on every Play upload; the run number does that.
+          # 1000 offset leaves room for builds made by hand before CI existed.
+          echo "code=$(( 1000 + ${{ github.run_number }} ))" >> "$GITHUB_OUTPUT"
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then echo "name=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"; else echo "name=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Build signed AAB
+        working-directory: android
+        env:
+          KEYSTORE_FILE: ${{ runner.temp }}/upload.jks
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          APP_VERSION_CODE: ${{ steps.version.outputs.code }}
+          APP_VERSION_NAME: ${{ steps.version.outputs.name }}
+        run: ./gradlew bundleRelease --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oti-recovery-${{ steps.version.outputs.name }}-${{ steps.version.outputs.code }}.aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Upload to Google Play
+        if: ${{ env.HAS_PLAY_CREDENTIALS == 'true' }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: org.otirecovery.app
+          releaseFiles: android/app/build/outputs/bundle/release/app-release.aab
+          track: ${{ github.event.inputs.track || 'internal' }}
+          status: completed
