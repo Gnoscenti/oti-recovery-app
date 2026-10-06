@@ -23,7 +23,7 @@ const MATRIX = /** @type {Record<string, Partial<Record<Role, Level>>>} */ ({
 
 /**
  * @param {{now?: () => Date, viewerRole?: Role}} [opts]
- * @returns {CommunityApi & {setViewer: (role: 'participant'|'coach'|'board'|'admin'|'newmember'|'pending'|'signed-out') => void, viewer: () => string}}
+ * @returns {CommunityApi & {setViewer: (role: 'participant'|'coach'|'board'|'admin'|'gigi'|'newmember'|'pending'|'signed-out') => void, viewer: () => string}}
  */
 export function createDemoApi(opts = {}) {
   const now = opts.now || (() => new Date());
@@ -32,9 +32,10 @@ export function createDemoApi(opts = {}) {
   const users = {
     participant: { id: 'u-sample-participant', email: 'sample.participant@example.org', displayName: 'Sam', role: /** @type {Role} */ ('participant') },
     newmember: { id: 'u-newmember', email: 'newmember@example.org', displayName: '', role: /** @type {Role} */ ('participant') },
-    coach: { id: 'u-gigi', email: 'coach@example.org', displayName: 'Gigi', role: /** @type {Role} */ ('coach') },
+    coach: { id: 'u-coach', email: 'coach@example.org', displayName: 'Sample coach', role: /** @type {Role} */ ('coach') },
     board: { id: 'u-board', email: 'board@example.org', displayName: 'Dana (board)', role: /** @type {Role} */ ('board') },
     admin: { id: 'u-admin', email: 'admin@example.org', displayName: 'Julie', role: /** @type {Role} */ ('admin') },
+    gigi: { id: 'u-gigi', email: 'gigi.admin@example.org', displayName: 'Gigi', role: /** @type {Role} */ ('admin') },
     pending: { id: 'u-pending', email: 'newperson@example.org', displayName: '', role: /** @type {Role} */ ('none') },
   };
   const others = {
@@ -67,12 +68,13 @@ export function createDemoApi(opts = {}) {
   /** @type {Record<string, string>} */
   const readMarks = {};
   /** @type {Set<string>} */
-  const accepted = new Set(['u-gigi', 'u-board', 'u-admin', 'u-sample-participant']);
+  const accepted = new Set(['u-coach', 'u-gigi', 'u-board', 'u-admin', 'u-sample-participant']);
   /** @type {Record<string, string>} */
   const names = Object.fromEntries(Object.values(users).map((u) => [u.id, u.displayName]));
   /** @type {Array<{email:string, role:Role, note:string|null, addedAt:string, redeemedAt:string|null, redeemedBy:string|null}>} */
   const allowlist = [
-    { email: 'coach@example.org', role: 'coach', note: 'Gigi', addedAt: iso(60 * 24 * 30), redeemedAt: iso(60 * 24 * 29), redeemedBy: 'u-gigi' },
+    { email: 'gigi.admin@example.org', role: 'admin', note: 'Gigi (review)', addedAt: iso(60), redeemedAt: iso(30), redeemedBy: 'u-gigi' },
+    { email: 'coach@example.org', role: 'coach', note: 'Sample coach', addedAt: iso(60 * 24 * 30), redeemedAt: iso(60 * 24 * 29), redeemedBy: 'u-coach' },
     { email: 'board@example.org', role: 'board', note: 'Dana', addedAt: iso(60 * 24 * 20), redeemedAt: iso(60 * 24 * 19), redeemedBy: 'u-board' },
     { email: 'maya@example.org', role: 'participant', note: null, addedAt: iso(60 * 24 * 10), redeemedAt: iso(60 * 24 * 9), redeemedBy: 'u-maya' },
     { email: 'tess@example.org', role: 'participant', note: null, addedAt: iso(60 * 24 * 8), redeemedAt: iso(60 * 24 * 8), redeemedBy: 'u-tess' },

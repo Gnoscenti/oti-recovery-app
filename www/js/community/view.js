@@ -144,7 +144,7 @@ export function mountCommunity(root, ctx) {
 
   function reviewBanner() {
     const demo = /** @type {any} */ (api);
-    const options = [['participant', 'Participant'], ['coach', 'Coach (Gigi)'], ['board', 'Board member'], ['admin', 'Admin (Julie)'], ['newmember', 'New member (first sign-in)'], ['pending', 'Not on the member list'], ['signed-out', 'Signed out']];
+    const options = [['participant', 'Participant'], ['coach', 'Coach'], ['board', 'Board member'], ['admin', 'Admin (Julie)'], ['gigi', 'Admin (Gigi)'], ['newmember', 'New member (first sign-in)'], ['pending', 'Not on the member list'], ['signed-out', 'Signed out']];
     const sel = el('select', { id: 'review-viewer', 'aria-label': 'View as', onChange: (/** @type {Event} */ e) => { demo.setViewer(/** @type {HTMLSelectElement} */ (e.target).value); leaveChannel(); init(); } },
       options.map(([v, label]) => el('option', { value: v, selected: demo.viewer() === v ? true : null }, label)));
     return el('div', { class: 'review-banner' },

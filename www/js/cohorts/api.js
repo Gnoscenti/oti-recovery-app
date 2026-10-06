@@ -47,7 +47,7 @@ export function demoCohorts(viewer, now) {
     { id: 'sample-a', name: 'Sample cohort A', starts_at: new Date(now().getTime()-86400000).toISOString(), ends_at: new Date(now().getTime()+180*86400000).toISOString() },
     { id: 'sample-b', name: 'Sample cohort B', starts_at: new Date(now().getTime()-86400000).toISOString(), ends_at: new Date(now().getTime()+180*86400000).toISOString() },
   ];
-  const memberships = new Map([['sample-a', new Set(['u-sample-participant','u-maya','u-tess','u-gigi'])], ['sample-b', new Set(['u-gigi'])]]);
+  const memberships = new Map([['sample-a', new Set(['u-sample-participant','u-maya','u-tess','u-coach'])], ['sample-b', new Set(['u-coach'])]]);
   /** @type {any[]} */ const events = [{ id:'sample-event', cohort_id:'sample-a', title:'Sample cohort gathering', starts_at: new Date(now().getTime()+86400000).toISOString(), ends_at: new Date(now().getTime()+90000000).toISOString(), location:'Review only' }];
   /** @type {any[]} */ const activities = [{ id:'sample-activity',cohort_id:'sample-a',title:'Sample group activity',body:'Review fixture: a coach-created activity appears only in its cohort.' }];
   /** @type {any[]} */ const rsvps = [];
@@ -68,7 +68,7 @@ export function demoCohorts(viewer, now) {
     async cancelCohortEvent(eid) {requireStaff();const e=event(eid);e.cancelled=true;},
     async createCohort(name, starts, ends) { requireStaff(); if(name.trim().length<2 || name.length>80 || !Number.isFinite(Date.parse(starts)) || !Number.isFinite(Date.parse(ends)) || Date.parse(ends)<=Date.parse(starts)) throw new Error('invalid'); const id=`sample-${++serial}`;cohorts.push({id,name,starts_at:starts,ends_at:ends});memberships.set(id,new Set([viewer().id]));return id; },
     async cohortMembers(cid) { if(!staff()&&!member(cid)) throw new Error('not_allowed');return [...(memberships.get(cid)||[])].filter(id=>staff()||id===viewer().id).map(user_id=>({user_id})); },
-    async cohortRoster() { requireStaff();return ['u-sample-participant','u-maya','u-tess','u-gigi','u-newmember'].map(id=>({id,display_name:id.replace('u-',''),role:id==='u-gigi'?'coach':'participant',status:'active'})); },
+    async cohortRoster() { requireStaff();return ['u-sample-participant','u-maya','u-tess','u-coach','u-newmember'].map(id=>({id,display_name:id.replace('u-',''),role:id==='u-coach'?'coach':'participant',status:'active'})); },
     async assignCohort(cid,uid,add) { requireStaff();const m=memberships.get(cid);if(!m)throw new Error('invalid');if(add)m.add(uid);else m.delete(uid); },
     async listCohortEvents(cid) { return structuredClone(access(cid)?events.filter(x=>x.cohort_id===cid&&!x.cancelled):[]); },
     async createCohortEvent(row) { check(row);if(!Number.isFinite(Date.parse(row.starts_at))||Date.parse(row.ends_at)<=Date.parse(row.starts_at))throw new Error('invalid');const e={...row,id:`sample-event-${++serial}`};events.push(e);return structuredClone(e); },
@@ -78,7 +78,7 @@ export function demoCohorts(viewer, now) {
     async rsvp(eid,status) { const e=event(eid);if(!member(e.cohort_id)||!['going','maybe','declined'].includes(status))throw new Error('not_allowed');const r=rsvps.find(x=>x.event_id===eid&&x.user_id===viewer().id);if(r)r.status=status;else rsvps.push({event_id:eid,user_id:viewer().id,status}); },
     async messageRsvp(eid,status,body) {
       requireStaff();const e=event(eid);if(!['going','maybe','declined','no-response'].includes(status)||!body.trim()||body.length>2000)throw new Error('invalid');
-      const recipients=[...(memberships.get(e.cohort_id)||[])].filter(id=>id!=='u-gigi' && (rsvps.find(r=>r.event_id===eid&&r.user_id===id)?.status||'no-response')===status);
+      const recipients=[...(memberships.get(e.cohort_id)||[])].filter(id=>id!=='u-coach' && (rsvps.find(r=>r.event_id===eid&&r.user_id===id)?.status||'no-response')===status);
       for(const id of recipients)deliveries.push({id:`sample-delivery-${++serial}`,event_id:eid,recipient_id:id,sender_id:viewer().id,body:body.trim(),created_at:now().toISOString()});return recipients.length;
     },
     async eventInbox(eid) { event(eid);return structuredClone(deliveries.filter(d=>d.event_id===eid&&(d.recipient_id===viewer().id||(staff()&&d.sender_id===viewer().id)))); },

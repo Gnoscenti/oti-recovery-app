@@ -19,7 +19,7 @@ export function mountCohorts(root, api, section, options={}) {
   }
   function reviewSelector() {
     if(api?.mode!=='demo')return;
-    const role=el('select',{'aria-label':'Review role'},['participant','newmember','coach','admin','board','signed-out'].map(r=>el('option',{value:r,selected:api.viewer()===r},r)));
+    const role=el('select',{'aria-label':'Review role'},['participant','newmember','coach','admin','gigi','board','signed-out'].map(r=>el('option',{value:r,selected:api.viewer()===r},r==='gigi'?'Admin (Gigi)':r==='admin'?'Admin (Julie)':r)));
     role.addEventListener('change',()=>run(async()=>{api.setViewer(role.value);}));
     root.append(el('div',{class:'notice'},'Review only · synthetic participants · no notifications are sent.',role));
   }

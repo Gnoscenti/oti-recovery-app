@@ -67,3 +67,11 @@ test('login assignment adds only the assigned calendar; unassigned sign-ins get 
  api.setViewer('admin');assert.deepEqual(await api.listAssignedCohorts(),[]);
  api.setViewer('board');assert.deepEqual(await api.listAssignedCohorts(),[]);
 });
+
+ test('Gigi review persona has admin access without participant discussion access',async()=>{
+ const api=createDemoApi({now:()=>NOW});api.setViewer('gigi');
+ assert.equal((await api.getMe()).role,'admin');
+ assert.deepEqual(await api.listMessages('c-affirmations'),[]);
+ await api.assignCohortByLogin('sample-a','newmember@example.org',true);
+ api.setViewer('newmember');assert.deepEqual((await api.listAssignedCohorts()).map(c=>c.id),['sample-a']);
+ });

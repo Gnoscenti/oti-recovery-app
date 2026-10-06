@@ -22,7 +22,7 @@ async function render() {
   const ticket=++generation;clear(root);root.append(el('h1',{},'OTI administration'));
   if(!api){root.append(el('p',{},'Administration is awaiting private server configuration.'));return;}
   if(review) {
-    const role=el('select',{'aria-label':'Admin review role'},['admin','coach','participant','board','signed-out'].map(r=>el('option',{value:r,selected:/** @type {any} */(api).viewer()===r},r)));
+    const role=el('select',{'aria-label':'Admin review role'},['admin','gigi','coach','participant','board','signed-out'].map(r=>el('option',{value:r,selected:/** @type {any} */(api).viewer()===r},r==='gigi'?'Admin (Gigi)':r==='admin'?'Admin (Julie)':r)));
     role.addEventListener('change',()=>{/** @type {any} */(api).setViewer(role.value);});
     root.append(el('div',{class:'notice'},'Review only · fictional participants · no email or push messages sent.',role));
   }
