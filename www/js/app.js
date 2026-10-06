@@ -80,7 +80,13 @@ function navigate() {
   closeSheet();
   for (const v of VIEWS) {
     const sec = document.getElementById(`view-${v}`);
-    if (sec) sec.hidden = v !== view;
+    if (sec) {
+      sec.hidden = v !== view;
+      if (v !== view && ['community','calendar','activity'].includes(v)) {
+        if (v === 'community' && state.community) { state.community.destroy(); state.community = null; }
+        clear(sec);
+      }
+    }
   }
   document.querySelectorAll('.tab').forEach((t) => {
     const tab = /** @type {HTMLElement} */ (t);
