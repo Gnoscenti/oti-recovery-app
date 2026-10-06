@@ -61,19 +61,7 @@ async function standalone(outName = 'standalone.html', opts = {}) {
   await writeFile(path.join(dist, outName), html);
 }
 
-/**
- * Static site for hosting the review copy (dist/site/): same page, but fonts come from
- * Google Fonts, images from OTI's own CDN, and the Supabase client is stubbed out
- * (the review copy runs on sample data and never talks to a server). Small enough
- * to upload through a hosting API.
- */
-const CDN_IMAGES = {
-  'assets/logo.png': 'https://static.wixstatic.com/media/727706_0cb4f0faeaec4e39990f350adbb2a703~mv2.png/v1/fill/w_240,h_240,al_c,q_90/logo.png',
-  'assets/community.jpg': 'https://static.wixstatic.com/media/727706_fe77ad1c0d8f4e9bb0d2111855647f7e~mv2.jpg/v1/fill/w_900,h_450,al_c,q_70/group.jpg',
-  'assets/here-to-thrive.jpg': 'https://static.wixstatic.com/media/727706_fa0e131ca65247d181aaace3806021bb~mv2.png/v1/fill/w_700,h_466,al_c,q_70/thrive.jpg',
-};
-const GOOGLE_FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Nunito+Sans:ital,opsz,wght@0,6..12,400..800;1,6..12,400..800&display=swap">';
-
+/** Hosted review uses local assets and a synthetic-only API. */
 async function reviewSite() {
   const site = path.join(dist, 'site');
   await rm(site, { recursive: true, force: true });
@@ -94,7 +82,7 @@ async function reviewSite() {
   for(const entry of ['styles.css','manifest.webmanifest','assets','fonts','data','privacy.html','admin'])await cp(path.join(www,entry),path.join(site,entry),{recursive:true});
   await cp(path.join(dist,'sw.js'),path.join(site,'sw.js'));
   const content=await readFile(path.join(www,'data/content.json'),'utf8');
-  const html=(await readFile(path.join(www,'index.html'),'utf8')).replace('<script src="app.js" defer></script>',`<script>window.__OTI_CONTENT__=${content};window.__OTI_REVIEW__=true;</script>\n<script src="app.js" defer></script>`);
+  const html=(await readFile(path.join(www,'index.html'),'utf8')).replace('<html lang="en">','<html lang="en" data-theme="dark">').replace('<title>OTI Recovery</title>','<title>OTI Recovery (review copy)</title>').replace('<script src="app.js" defer></script>',`<script>window.__OTI_CONTENT__=${content};window.__OTI_REVIEW__=true;</script>\n<script src="app.js" defer></script>`);
   await writeFile(path.join(site,'index.html'),html);
   await build({...esbuildOptions,entryPoints:[path.join(www,'js/admin/app.js')],outfile:path.join(site,'admin/admin.js'),banner:{js:'window.__OTI_REVIEW__=true;'},plugins:[{name:'admin-review-stub',setup(b){b.onResolve({filter:/community\/supabase\.js$/},args=>({path:args.path,namespace:'stub'}));b.onLoad({filter:/.*/,namespace:'stub'},()=>({contents:"export function createSupabaseApi(){throw new Error('review copy: no server');}",loader:'js'}));}}]});
 }
