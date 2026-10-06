@@ -229,7 +229,7 @@ export function createDemoApi(opts = {}) {
     },
     async listMembers() {
       const v = viewer(); if (!v || v.role !== 'admin') throw new Error('not_allowed');
-      const profiles = [...Object.values(users).filter((u) => u.role !== 'none' && u.id !== 'u-newmember'), ...Object.values(others)].map((u) => ({ id: u.id, displayName: names[u.id] ?? u.displayName, role: u.role, status: /** @type {'active'} */ ('active'), createdAt: iso(60 * 24 * 5) }));
+      const profiles = [...Object.values(users).filter((u) => u.role !== 'none' && u.id !== 'u-newmember'), ...Object.values(others)].map((u) => ({ id: u.id, displayName: names[u.id] ?? u.displayName, role: u.role, status: /** @type {'active'|'removed'} */ (removed.has(u.id)?'removed':'active'), createdAt: iso(60 * 24 * 5) }));
       return { allowlist: [...allowlist], profiles };
     },
     async addMember(email, role, note) {
@@ -241,6 +241,7 @@ export function createDemoApi(opts = {}) {
     async setMemberRole(email, role) { requireAdmin();const a = allowlist.find((x) => x.email === email); if (a) a.role = role; },
     async removeMember(userId) {
       const v = viewer(); if (!v || v.role !== 'admin') throw new Error('not_allowed');
+      removed.add(userId);
       messages = messages.map((x) => (x.authorId === userId ? { ...x, authorName: 'Former member' } : x));
     },
   };

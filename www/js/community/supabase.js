@@ -70,7 +70,7 @@ export function createSupabaseApi(cfg) {
       return { userId: data.user.id, email: data.user.email || '' };
     },
 
-    async signOut() { await client.auth.signOut(); },
+    async signOut() { const {error}=await client.auth.signOut();raise(error); },
 
     async getMe() {
       const user = await me();

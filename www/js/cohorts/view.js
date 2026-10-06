@@ -51,6 +51,9 @@ export function mountCohorts(root, api, section, options={}) {
       const today=new Date();starts.value=today.toISOString().slice(0,10);const later=new Date(today);later.setMonth(later.getMonth()+6);ends.value=later.toISOString().slice(0,10);
       root.append(form('Create cohort',[['Name',name],['Begins',starts],['Ends (suggested six months)',ends]],async()=>{selected=await api.createCohort(name.value,new Date(starts.value).toISOString(),new Date(ends.value).toISOString());}));
       if(selected) {
+        const current=cohorts.find(c=>c.id===selected);
+        const editName=input('Edit cohort name');editName.value=current.name;const editStart=input('Edit cohort begins','date');editStart.value=current.starts_at.slice(0,10);const editEnd=input('Edit cohort ends','date');editEnd.value=current.ends_at.slice(0,10);
+        root.append(el('details',{class:'card'},el('summary',{},'Edit cohort dates'),form('Save cohort',[['Name',editName],['Begins',editStart],['Ends',editEnd]],()=>api.updateCohort(selected,editName.value,new Date(editStart.value).toISOString(),new Date(editEnd.value).toISOString()))));
         const email=input('Participant login email','email');
         root.append(form('Assign participant',[['Login email',email]],()=>api.assignCohortByLogin(selected,email.value,true)));
         const roster=await api.cohortRoster();const members=await api.cohortMembers(selected);
@@ -93,6 +96,10 @@ export function mountCohorts(root, api, section, options={}) {
         const status=el('select',{'aria-label':'Message RSVP status'},['going','maybe','declined','no-response'].map(s=>el('option',{value:s},s)));
         const body=el('textarea',{'aria-label':'RSVP message',required:true,maxlength:2000});
         card.append(form('Message by RSVP status',[['Recipients',status],['Message',body]],async()=>{const count=await api.messageRsvp(e.id,status.value,body.value);window.alert(`${count} private in-app messages created${api.mode==='demo'?' (sample only)':''}.`);}));
+        const editTitle=input('Edit event title');editTitle.value=e.title;
+        const localValue=value=>{const d=new Date(value);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);};
+        const editStart=input('Edit event starts','datetime-local');editStart.value=localValue(e.starts_at);const editEnd=input('Edit event ends','datetime-local');editEnd.value=localValue(e.ends_at);const editLocation=input('Edit event location');editLocation.required=false;editLocation.value=e.location;
+        card.append(el('details',{},el('summary',{},'Edit event'),form('Save event',[['Title',editTitle],['Starts',editStart],['Ends',editEnd],['Location',editLocation]],()=>api.updateCohortEvent(e.id,{title:editTitle.value,starts_at:new Date(editStart.value).toISOString(),ends_at:new Date(editEnd.value).toISOString(),location:editLocation.value}))));
         card.append(button('Cancel event',()=>api.cancelCohortEvent(e.id)));
       }
       for(const m of inbox)card.append(el('div',{class:'notice'},el('strong',{},m.sender_id===me.id?'Sent message':'Event message'),el('p',{},m.body)));

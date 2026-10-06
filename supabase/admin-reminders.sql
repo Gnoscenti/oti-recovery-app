@@ -173,7 +173,7 @@ alter table oti_private.push_jobs enable row level security;
 -- Only the scheduler service can claim jobs; no browser role can execute this.
 create function public.claim_event_reminders() returns table(job_id uuid,lease uuid,endpoint text,p256dh text,auth_key text,starts_at timestamptz) language plpgsql security definer set search_path='' as $$
 begin
- delete from oti_private.push_jobs where starts_at<now()-interval '30 days';
+ delete from oti_private.push_jobs old_job where old_job.starts_at<now()-interval '30 days';
  insert into oti_private.push_jobs(subscription_id,event_key,cohort_event_id,starts_at)
  select s.id,e.id::text,e.id,e.starts_at from public.cohort_events e join public.cohorts c on c.id=e.cohort_id join public.cohort_members m on m.cohort_id=e.cohort_id join public.profiles p on p.id=m.user_id join public.push_subscriptions s on s.user_id=p.id
  where p.status='active' and p.role in ('participant','coach') and c.starts_at<=now() and c.ends_at>now() and not e.cancelled
