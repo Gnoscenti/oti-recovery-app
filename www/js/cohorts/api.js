@@ -53,11 +53,11 @@ export function demoCohorts(viewer, now) {
   /** @type {any[]} */ const rsvps = [];
   /** @type {any[]} */ const deliveries = [];
   const active = cid => cohorts.some(c=>c.id===cid && c.starts_at<=now().toISOString() && c.ends_at>now().toISOString());
-  const staff = () => ['coach','admin'].includes(viewer()?.role);
-  const member = cid => active(cid) && ['participant','coach'].includes(viewer()?.role) && memberships.get(cid)?.has(viewer()?.id);
+  const staff = () => ['coach','admin'].includes(viewer()?.role)&&viewer()?.status!=='removed';
+  const member = cid => active(cid) && viewer()?.status!=='removed' && ['participant','coach'].includes(viewer()?.role) && memberships.get(cid)?.has(viewer()?.id);
   const access = cid => member(cid) || (staff() && active(cid));
   const requireStaff = () => { if (!staff()) throw new Error('not_allowed'); };
-  const event = eid => { const e=events.find(x=>x.id===eid); if(!e || !access(e.cohort_id)) throw new Error('not_allowed'); return e; };
+  const event = eid => { const e=events.find(x=>x.id===eid); if(!e || e.cancelled || !access(e.cohort_id)) throw new Error('not_allowed'); return e; };
   const check = row => { requireStaff(); if(!active(row.cohort_id) || !row.title?.trim() || row.title.length>120) throw new Error('invalid'); };
   return {
     cohortMember: member,

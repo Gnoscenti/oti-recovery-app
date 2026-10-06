@@ -88,7 +88,7 @@ export function createDemoApi(opts = {}) {
   /** @type {Set<(s: import('./api.js').Session|null) => void>} */
   const authListeners = new Set();
 
-  function viewer() { return viewerKey === 'signed-out' ? null : users[viewerKey]; }
+  function viewer() {const u=viewerKey==='signed-out'?null:users[viewerKey];return u?{...u,status:removed.has(u.id)?'removed':'active'}:null;}
   /** @param {string} channelId */
   function levelFor(channelId) {
     const v = viewer(); if (!v) return null;
@@ -125,7 +125,7 @@ export function createDemoApi(opts = {}) {
       if(!uid)throw new Error('No active participant has that login email.');
       await cohort.assignCohort(cid,uid,add);audit.push({action:add?'assign':'remove',entity_type:'cohort_members',created_at:now().toISOString()});
     },
-    async registerParticipant(email,cid) {requireAdmin();const login=email.trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(login))throw new Error('invalid email');await this.addMember(login,'participant',null);if(cid){const u=Object.values(users).find(u=>u.email===login);if(u)await cohort.assignCohort(cid,u.id,true);}audit.push({action:'register',entity_type:'participant',created_at:now().toISOString()});},
+    async registerParticipant(email,cid) {requireAdmin();const login=email.trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(login))throw new Error('invalid email');await this.addMember(login,'participant','');if(cid){const u=Object.values(users).find(u=>u.email===login);if(u)await cohort.assignCohort(cid,u.id,true);}audit.push({action:'register',entity_type:'participant',created_at:now().toISOString()});},
     async manageParticipant(uid,role,status) {requireAdmin();if(uid===viewer()?.id)throw new Error('Cannot change your own staff access.');const u=Object.values(users).find(u=>u.id===uid);if(u){u.role=role;if(status==='removed')removed.add(uid);else removed.delete(uid);}audit.push({action:'access_change',entity_type:'participant',created_at:now().toISOString()});},
     async adminAudit() {requireAdmin();return structuredClone(audit);},
     async savePushSubscription() {throw new Error('Review copies do not send notifications.');},
