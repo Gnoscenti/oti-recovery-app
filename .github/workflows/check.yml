@@ -25,7 +25,7 @@ jobs:
         with:
           deno-version: v2.x
       - name: Verify push server imports and types
-        run: deno check supabase/functions/event-reminders/index.ts
+        run: deno check --config supabase/functions/event-reminders/deno.json supabase/functions/event-reminders/index.ts
       - name: Install Chrome and Safari test browsers
         run: npx playwright-core install --with-deps chromium webkit
       - name: Chrome and Safari mobile/desktop regression test
