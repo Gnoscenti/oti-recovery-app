@@ -57,3 +57,13 @@ test('public content/navigation retain liked features and remove rejected sectio
  assert.deepEqual(c.events.map(e=>e.id),['monday-group']);
  assert.doesNotMatch(app,/'Donate'|'Business sponsors'|Recovery communities & help/);
 });
+
+
+test('login assignment adds only the assigned calendar; unassigned sign-ins get no private cohorts',async()=>{
+ const api=createDemoApi({now:()=>NOW});api.setViewer('newmember');assert.deepEqual(await api.listAssignedCohorts(),[]);
+ await assert.rejects(api.assignCohortByLogin('sample-a','newmember@example.org',true),/not_allowed/);
+ api.setViewer('admin');await api.assignCohortByLogin('sample-a',' NEWMEMBER@EXAMPLE.ORG ',true);
+ api.setViewer('newmember');assert.deepEqual((await api.listAssignedCohorts()).map(c=>c.id),['sample-a']);
+ api.setViewer('admin');assert.deepEqual(await api.listAssignedCohorts(),[]);
+ api.setViewer('board');assert.deepEqual(await api.listAssignedCohorts(),[]);
+});

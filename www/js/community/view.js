@@ -1,3 +1,4 @@
+import { disablePush } from '../push/client.js';
 // @ts-check
 /**
  * Community tab UI: sign in with an emailed code → topics → messages,
@@ -469,7 +470,7 @@ export function mountCommunity(root, ctx) {
 
   async function signOut() {
     leaveChannel();
-    try { await api?.signOut(); } catch { /* ignore */ }
+    try { if(api)await disablePush(api);await api?.signOut(); } catch { toast('Could not finish sign-out. Please try again.'); return; }
     state.session = null; state.me = null; state.channels = []; state.unread = {}; ctx.onUnread?.(0);
     state.screen = 'signed-out'; render();
   }

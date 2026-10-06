@@ -114,7 +114,14 @@ function renderView(view) {
     return;
   }
   clear(sec);
-  if (view === 'calendar') { mountCohorts(sec, communityContext().api, 'calendar'); return; }
+  if (view === 'calendar') {
+    sec.append(el('h1', {}, 'Calendar'), el('h2', {}, 'Default calendar'));
+    renderCalendar(sec);
+    const cohortRoot = el('section', { class: 'section', 'aria-label': 'Assigned cohort calendars' });
+    sec.append(cohortRoot);
+    mountCohorts(cohortRoot, communityContext().api, 'calendar');
+    return;
+  }
   /** @type {Record<string, (sec: HTMLElement) => void>} */
   const renderers = { home: renderHome, calendar: renderCalendar, phones: renderPhones, activity: renderTools, more: renderMore };
   renderers[view](sec);
@@ -128,6 +135,11 @@ function communityContext() {
   let api = null;
   if (IS_REVIEW || cfg.demo) api = createDemoApi({ now });
   else if (cfg.supabaseUrl && cfg.supabaseAnonKey) api = createSupabaseApi({ url: cfg.supabaseUrl, anonKey: cfg.supabaseAnonKey, pollSeconds: cfg.pollSeconds });
+  if (api) api.onAuthChange(() => {
+    closeSheet();
+    for (const name of ['calendar', 'activity']) { const root = document.getElementById(`view-${name}`); if (root) clear(root); }
+    if (['calendar', 'activity'].includes(state.view)) renderAll();
+  });
   return sharedContext = {
     api, now, review: IS_REVIEW || cfg.demo, orgEmail: state.content.org.email,
     onUnread: (/** @type {number} */ total) => {
@@ -826,7 +838,7 @@ async function boot() {
   navigate();
   refreshRemoteContent();
 
-  if (!IS_REVIEW && 'serviceWorker' in navigator && !native.isNative() && location.protocol === 'https:') {
+  if ('serviceWorker' in navigator && !native.isNative() && window.isSecureContext) {
     navigator.serviceWorker.register('sw.js').catch(() => { /* optional */ });
   }
 }

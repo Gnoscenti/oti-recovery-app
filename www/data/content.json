@@ -128,9 +128,9 @@
       "reminder": {
         "weekday": "MO",
         "hour": 18,
-        "minute": 30,
-        "title": "OTI support group tonight",
-        "body": "The Online Recovery Support Group starts at 7:00 PM. You've got this."
+        "minute": 0,
+        "title": "Event reminder",
+        "body": "An event on your calendar starts in one hour. Open the app for details."
       }
     }
   ],

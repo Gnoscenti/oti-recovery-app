@@ -1,54 +1,68 @@
 // @ts-check
 import { el, clear } from '../dom.js';
 import { friendlyError } from '../community/helpers.js';
+import { mountPushSettings } from '../push/client.js';
 
-/** Cohort data is never embedded in public content.json. @param {HTMLElement} root @param {any} api @param {'activity'|'calendar'} section */
-export function mountCohorts(root, api, section) {
+/** @param {HTMLElement} root @param {any} api @param {'activity'|'calendar'} section @param {{management?:boolean}} [options] */
+export function mountCohorts(root, api, section, options={}) {
   let selected = '';
   let generation = 0;
-  const heading = section === 'calendar' ? 'Cohort calendar' : 'Activity';
+  const management=!!options.management;
   const button = (label, action) => el('button', { class:'btn small',type:'button',onClick:()=>run(action) },label);
-  /** @param {() => any} action */
-  async function run(action) { try { await action(); await render(); } catch(err) { const notice=el('p',{role:'alert',class:'notice danger'},friendlyError(err));root.append(notice); } }
-  /** @returns {HTMLInputElement} */
+  async function run(action) { try { await action(); await render(); } catch(err) { root.append(el('p',{role:'alert',class:'notice danger'},friendlyError(err))); } }
   const input = (label, type='text') => el('input',{type,'aria-label':label,placeholder:label,required:true});
   function form(title, fields, save) {
     const box=el('form',{class:'card stack'},el('h3',{},title));
     for(const [label,node] of fields) box.append(el('label',{},label,node));
     const submit=el('button',{type:'submit',class:'btn primary small'},title);box.append(submit);
-    box.addEventListener('submit',e=>{e.preventDefault();submit.disabled=true;run(async()=>{await save();}).finally(()=>{submit.disabled=false;});});return box;
+    box.addEventListener('submit',e=>{e.preventDefault();submit.disabled=true;run(save).finally(()=>{submit.disabled=false;});});return box;
+  }
+  function reviewSelector() {
+    if(api?.mode!=='demo')return;
+    const role=el('select',{'aria-label':'Review role'},['participant','newmember','coach','admin','board','signed-out'].map(r=>el('option',{value:r,selected:api.viewer()===r},r)));
+    role.addEventListener('change',()=>run(async()=>{api.setViewer(role.value);}));
+    root.append(el('div',{class:'notice'},'Review only · synthetic participants · no notifications are sent.',role));
   }
   async function render() {
-    const ticket=++generation;
-    clear(root);root.append(el('h2',{},heading));
-    if(!api) {root.append(el('p',{},'Private cohort access is not switched on yet.'));return;}
+    const ticket=++generation;clear(root);reviewSelector();
+    if(!api)return;
     const me=await api.getMe();
-    if(ticket!==generation || !root.isConnected)return;
-    if(!me||me.status!=='active'||!['participant','coach','admin'].includes(me.role)) {
-      root.append(el('p',{},'Sign in through Community. An admin or coach must assign your cohort.'),el('a',{href:'#community',class:'btn'},'Community sign-in'));return;
+    if(ticket!==generation||!root.isConnected)return;
+    if(!me||me.status!=='active'||!['participant','coach','admin'].includes(me.role))return;
+    const staff=management&&['admin','coach'].includes(me.role);
+    if(management&&!staff)return;
+    const cohorts=staff?await api.listCohorts():await api.listAssignedCohorts();
+    if(ticket!==generation||!root.isConnected)return;
+    if(section==='calendar'&&!management&&me.role!=='admin') {
+      const settings=el('div',{});root.append(settings);mountPushSettings(settings,api);
     }
-    const staff=['admin','coach'].includes(me.role);
-    const cohorts=await api.listCohorts();
-    if(ticket!==generation || !root.isConnected)return;
-    clear(root);root.append(el('h2',{},heading));
-    if(api.mode==='demo') {
-      const role=el('select',{'aria-label':'Review role'},['participant','coach','admin','board','signed-out'].map(r=>el('option',{value:r,selected:api.viewer()===r},r)));
-      role.addEventListener('change',()=>run(async()=>{api.setViewer(role.value);}));
-      root.append(el('div',{class:'notice'},'Review only · synthetic data · messages stay in this browser session.',role));
+    if(!cohorts.length&&!management) {
+      if(section==='activity')root.append(el('h2',{},'Activity'),el('p',{},'Your coach will assign your cohort. Activities will appear here once you are assigned.'));
+      return;
     }
+    root.append(el('h2',{},section==='calendar'?'Cohort calendar':'Cohort activity'));
     if(!cohorts.some(c=>c.id===selected))selected=cohorts[0]?.id||'';
-    const select=el('select',{'aria-label':'Cohort'},cohorts.map(c=>el('option',{value:c.id,selected:c.id===selected},`${c.name} · ${new Date(c.ends_at).toLocaleDateString()}`)));
-    select.addEventListener('change',()=>{selected=select.value;run(async()=>{});});root.append(select);
+    if(cohorts.length) {
+      const select=el('select',{'aria-label':'Cohort'},cohorts.map(c=>el('option',{value:c.id,selected:c.id===selected},`${c.name} · ${new Date(c.ends_at).toLocaleDateString()}`)));
+      select.addEventListener('change',()=>{selected=select.value;run(async()=>{});});root.append(select);
+    }
     if(staff) {
       const name=input('Cohort name');const starts=input('Cohort begins','date');const ends=input('Cohort ends','date');
       const today=new Date();starts.value=today.toISOString().slice(0,10);const later=new Date(today);later.setMonth(later.getMonth()+6);ends.value=later.toISOString().slice(0,10);
       root.append(form('Create cohort',[['Name',name],['Begins',starts],['Ends (suggested six months)',ends]],async()=>{selected=await api.createCohort(name.value,new Date(starts.value).toISOString(),new Date(ends.value).toISOString());}));
+      if(selected) {
+        const email=input('Participant login email','email');
+        root.append(form('Assign participant',[['Login email',email]],()=>api.assignCohortByLogin(selected,email.value,true)));
+        const roster=await api.cohortRoster();const members=await api.cohortMembers(selected);
+        if(ticket!==generation||!root.isConnected)return;
+        root.append(el('h3',{},'Assigned participants'));
+        for(const m of members) {const p=roster.find(p=>p.id===m.user_id);if(p)root.append(el('div',{class:'row'},el('span',{},p.display_name||'Participant'),button('Remove from cohort',()=>api.assignCohort(selected,p.id,false))));}
+      }
     }
-    if(!selected) {root.append(el('p',{},'No cohort assigned yet. Ask your coach.'));return;}
+    if(!selected)return;
     const cohort=cohorts.find(c=>c.id===selected);
-    if(new Date(cohort.ends_at)<=new Date()||new Date(cohort.starts_at)>new Date()) {root.append(el('p',{},'This cohort is outside its active dates. Private activity and events are unavailable.'));return;}
+    if(new Date(cohort.ends_at)<=new Date()||new Date(cohort.starts_at)>new Date()) {root.append(el('p',{},'This cohort is outside its active dates.'));return;}
     if(section==='activity') {
-      root.append(el('p',{class:'muted'},'Visible only in this cohort. Daily Affirmations in Community start with the selected affirmation, followed by coach posts. Automatic daily changes await an approved ongoing source and cadence.'));
       const rows=await api.listActivities(selected);
       if(ticket!==generation||!root.isConnected)return;
       for(const a of rows)root.append(el('article',{class:'card'},el('h3',{},a.title),el('p',{},a.body)));
@@ -56,11 +70,6 @@ export function mountCohorts(root, api, section) {
       if(staff) {
         const title=input('Activity title');const body=el('textarea',{'aria-label':'Activity description',required:true,maxlength:2000});
         root.append(form('Post activity',[['Title',title],['Description',body]],()=>api.createActivity({cohort_id:selected,title:title.value,body:body.value})));
-        const [roster,members]=await Promise.all([api.cohortRoster(),api.cohortMembers(selected)]);
-        if(ticket!==generation||!root.isConnected)return;
-        const memberIds=new Set(members.map(m=>m.user_id));
-        root.append(el('h3',{},'Cohort membership'),el('p',{},'Only admins and coaches can assign or remove existing members. Global account roles are managed separately by admins.'));
-        for(const p of roster)root.append(el('div',{class:'row'},el('span',{},p.display_name||'Unnamed member'),button(memberIds.has(p.id)?'Remove from cohort':'Add to cohort',()=>api.assignCohort(selected,p.id,!memberIds.has(p.id)))));
       }
       return;
     }
@@ -72,18 +81,20 @@ export function mountCohorts(root, api, section) {
     if(ticket!==generation||!root.isConnected)return;
     if(!events.length)root.append(el('p',{},'No events posted for this cohort yet.'));
     for(const e of events) {
+      const rsvps=await api.listRsvps(e.id);const inbox=await api.eventInbox(e.id);
+      if(ticket!==generation||!root.isConnected)return;
       const card=el('article',{class:'card stack'},el('h3',{},e.title),el('p',{},`${new Date(e.starts_at).toLocaleString()} · ${e.location}`));
-      const rsvps=await api.listRsvps(e.id);
       const own=rsvps.find(r=>r.user_id===me.id);
-      card.append(el('p',{},`Your RSVP: ${own?.status||'No response'}`));
-      if(me.role!=='admin')card.append(el('div',{class:'row'},['going','maybe','declined'].map(s=>button(s,()=>api.rsvp(e.id,s)))));
+      if(!management) {
+        card.append(el('p',{},`Your RSVP: ${own?.status||'No response'}`));
+        if(me.role!=='admin')card.append(el('div',{class:'row'},['going','maybe','declined'].map(s=>button(s,()=>api.rsvp(e.id,s)))));
+      }
       if(staff) {
         const status=el('select',{'aria-label':'Message RSVP status'},['going','maybe','declined','no-response'].map(s=>el('option',{value:s},s)));
         const body=el('textarea',{'aria-label':'RSVP message',required:true,maxlength:2000});
         card.append(form('Message by RSVP status',[['Recipients',status],['Message',body]],async()=>{const count=await api.messageRsvp(e.id,status.value,body.value);window.alert(`${count} private in-app messages created${api.mode==='demo'?' (sample only)':''}.`);}));
+        card.append(button('Cancel event',()=>api.cancelCohortEvent(e.id)));
       }
-      const inbox=await api.eventInbox(e.id);
-      if(ticket!==generation||!root.isConnected)return;
       for(const m of inbox)card.append(el('div',{class:'notice'},el('strong',{},m.sender_id===me.id?'Sent message':'Event message'),el('p',{},m.body)));
       root.append(card);
     }

@@ -109,6 +109,9 @@ export function createDemoApi(opts = {}) {
   function session(u) { return u ? { userId: u.id, email: u.email } : null; }
 
   const cohort = demoCohorts(viewer, now);
+  const removed=new Set();
+  const audit=[];
+  const requireAdmin=()=>{if(viewer()?.role!=='admin')throw new Error('not_allowed');};
   return {
     ...cohort,
     async createCohort(name, starts, ends) {
@@ -116,6 +119,17 @@ export function createDemoApi(opts = {}) {
       for (const slug of ['events','affirmations']) channels.push({ id: id+'-'+slug, cohortId:id, slug, name:(slug==='events'?'Events':'Daily Affirmations')+' · '+name, description: 'Private cohort topic; cadence awaiting review.', pinModeratorLatest:slug==='affirmations', sortOrder:slug==='events'?10:20 });
       return id;
     },
+    async assignCohortByLogin(cid,email,add) {
+      if(!['admin','coach'].includes(viewer()?.role||''))throw new Error('not_allowed');
+      const login=email.trim().toLowerCase();const uid=Object.values(users).find(u=>u.email===login)?.id||allowlist.find(a=>a.email===login)?.redeemedBy;
+      if(!uid)throw new Error('No active participant has that login email.');
+      await cohort.assignCohort(cid,uid,add);audit.push({action:add?'assign':'remove',entity_type:'cohort_members',created_at:now().toISOString()});
+    },
+    async registerParticipant(email,cid) {requireAdmin();const login=email.trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(login))throw new Error('invalid email');await this.addMember(login,'participant',null);if(cid){const u=Object.values(users).find(u=>u.email===login);if(u)await cohort.assignCohort(cid,u.id,true);}audit.push({action:'register',entity_type:'participant',created_at:now().toISOString()});},
+    async manageParticipant(uid,role,status) {requireAdmin();if(uid===viewer()?.id)throw new Error('Cannot change your own staff access.');const u=Object.values(users).find(u=>u.id===uid);if(u){u.role=role;if(status==='removed')removed.add(uid);else removed.delete(uid);}audit.push({action:'access_change',entity_type:'participant',created_at:now().toISOString()});},
+    async adminAudit() {requireAdmin();return structuredClone(audit);},
+    async savePushSubscription() {throw new Error('Review copies do not send notifications.');},
+    async deletePushSubscription() {},
     mode: 'demo',
     setViewer(role) { viewerKey = /** @type {any} */ (role); authListeners.forEach((cb) => cb(session(viewer()))); },
     viewer() { return viewerKey; },
@@ -132,7 +146,7 @@ export function createDemoApi(opts = {}) {
     async signOut() { this.setViewer('signed-out'); },
     async getMe() {
       const v = viewer(); if (!v) return null;
-      return { id: v.id, displayName: names[v.id] ?? v.displayName, role: v.role, status: 'active', acceptedGuidelines: accepted.has(v.id) };
+      return { id: v.id, displayName: names[v.id] ?? v.displayName, role: v.role, status: removed.has(v.id)?'removed':'active', acceptedGuidelines: accepted.has(v.id) };
     },
     async updateMe(patch) {
       const v = viewer(); if (!v) throw new Error('not signed in');
@@ -224,7 +238,7 @@ export function createDemoApi(opts = {}) {
       if (existing) { existing.role = role; existing.note = note || null; }
       else allowlist.unshift({ email, role, note: note || null, addedAt: now().toISOString(), redeemedAt: null, redeemedBy: null });
     },
-    async setMemberRole(email, role) { const a = allowlist.find((x) => x.email === email); if (a) a.role = role; },
+    async setMemberRole(email, role) { requireAdmin();const a = allowlist.find((x) => x.email === email); if (a) a.role = role; },
     async removeMember(userId) {
       const v = viewer(); if (!v || v.role !== 'admin') throw new Error('not_allowed');
       messages = messages.map((x) => (x.authorId === userId ? { ...x, authorName: 'Former member' } : x));

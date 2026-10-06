@@ -4,13 +4,28 @@ export function cohortApi(client) {
   const result = (/** @type {any} */ r) => { if (r.error) throw new Error(r.error.message); return r.data; };
   return {
     async listCohorts() { return result(await client.from('cohorts').select('*').order('starts_at')); },
+    async listAssignedCohorts() {
+      const me=result(await client.auth.getUser()).user;if(!me)return [];
+      const rows=result(await client.from('cohort_members').select('cohort_id').eq('user_id',me.id));
+      if(!rows.length)return [];
+      return result(await client.from('cohorts').select('*').in('id',rows.map(r=>r.cohort_id)).lte('starts_at',new Date().toISOString()).gt('ends_at',new Date().toISOString()).order('starts_at'));
+    },
+    async assignCohortByLogin(cid,login,add) { return result(await client.rpc('assign_cohort_by_login',{cid,login_email:login.trim().toLowerCase(),add_member:add})); },
+    async registerParticipant(login,cid) { return result(await client.rpc('register_participant',{login_email:login.trim().toLowerCase(),cid})); },
+    async manageParticipant(uid,role,status) { return result(await client.rpc('manage_participant',{uid,new_role:role,new_status:status})); },
+    async adminAudit() { return result(await client.from('admin_audit').select('action,entity_type,created_at').order('created_at',{ascending:false}).limit(100)); },
+    async cancelCohortEvent(eid) { return result(await client.from('cohort_events').update({cancelled:true}).eq('id',eid)); },
+    async savePushSubscription(subscription) { const me=result(await client.auth.getUser()).user;if(!me)throw new Error('not_allowed');const keys={p256dh:subscription.keys.p256dh,auth_key:subscription.keys.auth};const existing=result(await client.from('push_subscriptions').select('id').eq('endpoint',subscription.endpoint).maybeSingle());return result(await (existing?client.from('push_subscriptions').update(keys).eq('id',existing.id):client.from('push_subscriptions').insert({user_id:me.id,endpoint:subscription.endpoint,...keys})));  },
+    async deletePushSubscription(endpoint) { return result(await client.from('push_subscriptions').delete().eq('endpoint',endpoint)); },
+    async updateCohort(cid,name,starts,ends) {return result(await client.from('cohorts').update({name,starts_at:starts,ends_at:ends}).eq('id',cid));},
+    async updateCohortEvent(eid,row) {return result(await client.from('cohort_events').update(row).eq('id',eid));},
     async createCohort(name, starts, ends) { return result(await client.rpc('create_cohort', { cname: name, begins: starts, finishes: ends })); },
     async cohortMembers(cid) { return result(await client.from('cohort_members').select('user_id').eq('cohort_id', cid)); },
     async cohortRoster() { return result(await client.from('profiles').select('id,display_name,role,status').in('role', ['participant', 'coach']).eq('status', 'active')); },
     async assignCohort(cid, uid, add) {
       return result(await (add ? client.from('cohort_members').upsert({ cohort_id: cid, user_id: uid }) : client.from('cohort_members').delete().eq('cohort_id', cid).eq('user_id', uid)));
     },
-    async listCohortEvents(cid) { return result(await client.from('cohort_events').select('*').eq('cohort_id', cid).order('starts_at')); },
+    async listCohortEvents(cid) { return result(await client.from('cohort_events').select('*').eq('cohort_id', cid).eq('cancelled',false).order('starts_at')); },
     async createCohortEvent(row) { return result(await client.from('cohort_events').insert(row).select().single()); },
     async listActivities(cid) { return result(await client.from('cohort_activities').select('*').eq('cohort_id', cid)); },
     async createActivity(row) { return result(await client.from('cohort_activities').insert(row).select().single()); },
@@ -47,11 +62,15 @@ export function demoCohorts(viewer, now) {
   return {
     cohortMember: member,
     async listCohorts() { return structuredClone(cohorts.filter(c=>member(c.id)||staff())); },
+    async listAssignedCohorts() { return structuredClone(cohorts.filter(c=>member(c.id))); },
+    async updateCohort(cid,name,starts,ends) {requireStaff();if(!name.trim()||!Number.isFinite(Date.parse(starts))||Date.parse(ends)<=Date.parse(starts))throw new Error('invalid');const c=cohorts.find(c=>c.id===cid);if(!c)throw new Error('invalid');Object.assign(c,{name,starts_at:starts,ends_at:ends});},
+    async updateCohortEvent(eid,row) {requireStaff();const e=event(eid);Object.assign(e,row);},
+    async cancelCohortEvent(eid) {requireStaff();const e=event(eid);e.cancelled=true;},
     async createCohort(name, starts, ends) { requireStaff(); if(name.trim().length<2 || name.length>80 || !Number.isFinite(Date.parse(starts)) || !Number.isFinite(Date.parse(ends)) || Date.parse(ends)<=Date.parse(starts)) throw new Error('invalid'); const id=`sample-${++serial}`;cohorts.push({id,name,starts_at:starts,ends_at:ends});memberships.set(id,new Set([viewer().id]));return id; },
     async cohortMembers(cid) { if(!staff()&&!member(cid)) throw new Error('not_allowed');return [...(memberships.get(cid)||[])].filter(id=>staff()||id===viewer().id).map(user_id=>({user_id})); },
     async cohortRoster() { requireStaff();return ['u-sample-participant','u-maya','u-tess','u-gigi','u-newmember'].map(id=>({id,display_name:id.replace('u-',''),role:id==='u-gigi'?'coach':'participant',status:'active'})); },
     async assignCohort(cid,uid,add) { requireStaff();const m=memberships.get(cid);if(!m)throw new Error('invalid');if(add)m.add(uid);else m.delete(uid); },
-    async listCohortEvents(cid) { return structuredClone(access(cid)?events.filter(x=>x.cohort_id===cid):[]); },
+    async listCohortEvents(cid) { return structuredClone(access(cid)?events.filter(x=>x.cohort_id===cid&&!x.cancelled):[]); },
     async createCohortEvent(row) { check(row);if(!Number.isFinite(Date.parse(row.starts_at))||Date.parse(row.ends_at)<=Date.parse(row.starts_at))throw new Error('invalid');const e={...row,id:`sample-event-${++serial}`};events.push(e);return structuredClone(e); },
     async listActivities(cid) { return structuredClone(access(cid)?activities.filter(x=>x.cohort_id===cid):[]); },
     async createActivity(row) { check(row);if(!row.body?.trim()||row.body.length>2000)throw new Error('invalid');const a={...row,id:`sample-activity-${++serial}`};activities.push(a);return structuredClone(a); },

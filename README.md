@@ -70,3 +70,5 @@ STORE-LAUNCH.md      step-by-step store submission guide
 
 `npm test` covers the calendar engine (recurrence, DST, ranges, multi-day, upcoming ordering, Google Calendar links, day counting), the phone helpers (formatting, validation, tel:/sms: links, search, grouping), the Community authorization layer (24 tests against the real schema in an in-process Postgres), the Community UI helpers and demo adapter, and cohort RLS tests for isolation, assignment, expiration, RSVP ownership and private status-targeted messages. Check also runs `scripts/test-chrome.mjs` against the synthetic review site in desktop and mobile Chromium.
 
+
+See [Admin, mobile Home Screen app and one-hour reminders](docs/ADMIN-MOBILE-REMINDERS.md) for the latest calendar behavior, staff portal, privacy boundaries and production activation.

@@ -21,9 +21,14 @@ jobs:
       - run: npm ci
       - name: Validate content, type-check, unit tests, build
         run: npm run check
-      - name: Install Chrome test browser
-        run: npx playwright-core install --with-deps chromium
-      - name: Chrome review smoke test
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Verify push server imports and types
+        run: deno check supabase/functions/event-reminders/index.ts
+      - name: Install Chrome and Safari test browsers
+        run: npx playwright-core install --with-deps chromium webkit
+      - name: Chrome and Safari mobile/desktop regression test
         run: node scripts/test-chrome.mjs
       - name: Upload web build
         uses: actions/upload-artifact@v4
