@@ -39,7 +39,7 @@
  * @property {'active'|'removed'} status
  * @property {string} createdAt
  *
- * @typedef {Object} CommunityApi
+ * @typedef {Object} CoreCommunityApi
  * @property {'supabase'|'demo'} mode
  * @property {() => Promise<Session|null>} getSession
  * @property {(cb: (s: Session|null) => void) => () => void} onAuthChange
@@ -67,4 +67,6 @@
  * @property {() => Promise<void>} [refreshSession]
  */
 
+/** @typedef {CoreCommunityApi & ReturnType<typeof import('../cohorts/api.js').cohortApi>} CommunityApi */
 export {};
+

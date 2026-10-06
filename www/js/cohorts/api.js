@@ -47,7 +47,7 @@ export function demoCohorts(viewer, now) {
   return {
     cohortMember: member,
     async listCohorts() { return structuredClone(cohorts.filter(c=>member(c.id)||staff())); },
-    async createCohort(name, starts, ends) { requireStaff(); if(name.trim().length<2 || !Number.isFinite(Date.parse(starts)) || Date.parse(ends)<=Date.parse(starts)) throw new Error('invalid'); const id=`sample-${++serial}`;cohorts.push({id,name,starts_at:starts,ends_at:ends});memberships.set(id,new Set([viewer().id]));return id; },
+    async createCohort(name, starts, ends) { requireStaff(); if(name.trim().length<2 || name.length>80 || !Number.isFinite(Date.parse(starts)) || !Number.isFinite(Date.parse(ends)) || Date.parse(ends)<=Date.parse(starts)) throw new Error('invalid'); const id=`sample-${++serial}`;cohorts.push({id,name,starts_at:starts,ends_at:ends});memberships.set(id,new Set([viewer().id]));return id; },
     async cohortMembers(cid) { if(!staff()&&!member(cid)) throw new Error('not_allowed');return [...(memberships.get(cid)||[])].filter(id=>staff()||id===viewer().id).map(user_id=>({user_id})); },
     async cohortRoster() { requireStaff();return ['u-sample-participant','u-maya','u-tess','u-gigi','u-newmember'].map(id=>({id,display_name:id.replace('u-',''),role:id==='u-gigi'?'coach':'participant',status:'active'})); },
     async assignCohort(cid,uid,add) { requireStaff();const m=memberships.get(cid);if(!m)throw new Error('invalid');if(add)m.add(uid);else m.delete(uid); },

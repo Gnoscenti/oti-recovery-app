@@ -85,7 +85,7 @@ create policy activity_read on public.cohort_activities for select to authentica
 create policy activity_create on public.cohort_activities for insert to authenticated with check(oti_private.manage(cohort_id));
 create policy rsvp_read on public.event_rsvps for select to authenticated using(oti_private.event_access(event_id,true) or (user_id=auth.uid() and oti_private.event_access(event_id)));
 create policy rsvp_insert on public.event_rsvps for insert to authenticated with check(user_id=auth.uid() and oti_private.event_access(event_id) and exists(select 1 from public.cohort_events e where e.id=event_id and oti_private.member(e.cohort_id)));
-create policy rsvp_update on public.event_rsvps for update to authenticated using(user_id=auth.uid() and oti_private.event_access(event_id)) with check(user_id=auth.uid() and oti_private.event_access(event_id));
+create policy rsvp_update on public.event_rsvps for update to authenticated using(user_id=auth.uid() and exists(select 1 from public.cohort_events e where e.id=event_id and oti_private.member(e.cohort_id))) with check(user_id=auth.uid() and exists(select 1 from public.cohort_events e where e.id=event_id and oti_private.member(e.cohort_id)));
 create policy delivery_read on public.event_deliveries for select to authenticated using(oti_private.event_access(event_id) and (recipient_id=auth.uid() or (sender_id=auth.uid() and oti_private.event_access(event_id,true))));
 -- Coaches can select existing participant/coach IDs for assignment, never
 -- promote themselves or edit global roles. Membership is assigned explicitly.

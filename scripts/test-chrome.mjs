@@ -26,7 +26,7 @@ try {
   await page.getByLabel('Review role').selectOption('coach');await page.getByLabel('Message RSVP status').first().waitFor();await page.getByLabel('Message RSVP status').first().selectOption('going');await page.getByLabel('RSVP message').first().fill('Private browser-test message');
   page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'Message by RSVP status',exact:true}).first().click();await page.getByText('Private browser-test message',{exact:true}).waitFor();
   await page.getByLabel('Review role').selectOption('participant');await page.getByText('Private browser-test message',{exact:true}).waitFor();
-  await page.locator('a[data-tab="community"]').click();await page.locator('#review-viewer').waitFor();await page.selectOption('#review-viewer','board');await page.getByText('No topics for your role',{exact:false}).waitFor().catch(async()=>{assert.equal(await page.locator('#view-community .topic').count(),0);});
+  await page.locator('a[data-tab="community"]').click();await page.locator('#review-viewer').waitFor();await page.selectOption('#review-viewer','board');await page.getByText('No topics are open to your role yet.',{exact:true}).waitFor();assert.equal(await page.locator('#view-community .topic').count(),0);
   assert.deepEqual(errors,[]);assert.deepEqual(privateRequests,[]);await page.close();
  }
  console.log('Chrome/Chromium review flows passed at desktop and mobile sizes.');

@@ -41,6 +41,7 @@ export function createDemoApi(opts = {}) {
     tess: { id: 'u-tess', displayName: 'Tess R.', role: /** @type {Role} */ ('participant') },
   };
 
+  /** @type {Array<{id:string,slug:string,name:string,description:string,pinModeratorLatest:boolean,sortOrder:number,cohortId?:string}>} */
   const channels = [
     { id: 'c-events', slug: 'events', name: 'Events', description: 'Upcoming OTI events, TnT outings, rides, and who is coming.', pinModeratorLatest: false, sortOrder: 10 },
     { id: 'c-affirmations', slug: 'affirmations', name: 'Daily Affirmations', description: 'A daily affirmation from your coach, and a place to share yours.', pinModeratorLatest: true, sortOrder: 20 },
@@ -91,7 +92,7 @@ export function createDemoApi(opts = {}) {
   function levelFor(channelId) {
     const v = viewer(); if (!v) return null;
     const c = channels.find((x) => x.id === channelId); if (!c) return null;
-    if (!cohort.cohortMember('sample-a')) return null;
+    if (!cohort.cohortMember(c.cohortId || 'sample-a')) return null;
     return MATRIX[c.slug][v.role] || null;
   }
   /** @param {string} id */
@@ -109,6 +110,11 @@ export function createDemoApi(opts = {}) {
   const cohort = demoCohorts(viewer, now);
   return {
     ...cohort,
+    async createCohort(name, starts, ends) {
+      const id = await cohort.createCohort(name, starts, ends);
+      for (const slug of ['events','affirmations']) channels.push({ id: id+'-'+slug, cohortId:id, slug, name:(slug==='events'?'Events':'Daily Affirmations')+' · '+name, description: 'Private cohort topic; cadence awaiting review.', pinModeratorLatest:slug==='affirmations', sortOrder:slug==='events'?10:20 });
+      return id;
+    },
     mode: 'demo',
     setViewer(role) { viewerKey = /** @type {any} */ (role); authListeners.forEach((cb) => cb(session(viewer()))); },
     viewer() { return viewerKey; },

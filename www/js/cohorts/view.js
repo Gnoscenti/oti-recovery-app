@@ -8,6 +8,7 @@ export function mountCohorts(root, api, section) {
   let generation = 0;
   const heading = section === 'calendar' ? 'Cohort calendar' : 'Activity';
   const button = (label, action) => el('button', { class:'btn small',type:'button',onClick:()=>run(action) },label);
+  /** @param {() => any} action */
   async function run(action) { try { await action(); await render(); } catch(err) { const notice=el('p',{role:'alert',class:'notice danger'},friendlyError(err));root.append(notice); } }
   /** @returns {HTMLInputElement} */
   const input = (label, type='text') => el('input',{type,'aria-label':label,placeholder:label,required:true});
