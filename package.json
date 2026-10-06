@@ -1,6 +1,6 @@
 {
   "name": "oti-recovery-app",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "private": true,
   "description": "Over the Influence Recovery companion app: events calendar, phone list, sobriety tools, stories, and resources. Web (PWA) + Android + iOS via Capacitor.",
   "type": "module",

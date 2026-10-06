@@ -10,7 +10,7 @@ Cohorts have explicit start/end dates, suggested at roughly six months when crea
 
 ## Admin portal
 
-`/admin/` is a separate staff login interface. The review alias is `oti-recovery-admin.vercel.app`, rewritten to `/admin/index.html` by the hosting config. It hosts synthetic sample data until the production backend is configured. It is no-indexed and not cached. Its public HTML is not an authorization boundary: every sensitive server operation validates the current active role.
+`/admin/` is a separate staff login interface. The review alias is `oti-recovery-admin.vercel.app`, redirected to `/admin/` by the hosting config. It hosts synthetic sample data until the production backend is configured. It is no-indexed and not cached. Its public HTML is not an authorization boundary: every sensitive server operation validates the current active role.
 
 Admins can register participants by sign-in email, optionally assigning a cohort before their first login. Registration creates an allowlist entry; it does **not** send an email. Pending assignments are applied when the participant first signs in. Admins can change account roles and suspend/restore access. The portal prevents changing your own staff access, and the database protects the last active admin. Suspended accounts cannot read private content, and their push device registrations are removed.
 
@@ -41,7 +41,7 @@ The connected account currently exposes no identified active OTI Supabase projec
 3. Configure the deployment with `OTI_LIVE=1`, `OTI_SUPABASE_URL`, `OTI_SUPABASE_PUBLIC_KEY` (public/publishable key only), and `OTI_VAPID_PUBLIC_KEY`. The build copies only these public config values into the browser. **Never** put a service-role/secret/private VAPID key in browser config.
 4. Generate a VAPID key pair using the documented `web-push` tool; store `VAPID_PRIVATE_KEY`, `VAPID_PUBLIC_KEY`, `VAPID_SUBJECT` (a valid operator contact), and a random `REMINDER_CRON_SECRET` as Edge Function secrets. Deploy `supabase/functions/event-reminders/index.ts` with gateway JWT verification disabled; the handler verifies its own scheduler secret. Service role is server-only, and the database grants scheduler RPCs only to that role.
 5. Enable pg_cron/pg_net. Store the actual project URL and matching Cron secret in Supabase Vault as `oti_project_url` and `oti_reminder_cron_secret`. Run `reminders-cron.sql`. Never put secrets in source, SQL files or logs.
-6. Configure the admin hostname on this project. The supplied Vercel alias uses a root rewrite. For an organization-owned `admin.<domain>`, add that exact host to the rewrite or direct its root to `/admin/`; use the actual DNS values returned by the host. Separate origins require separate staff sign-in.
+6. Configure the admin hostname on this project. The supplied Vercel alias uses a root redirect. For an organization-owned `admin.<domain>`, add that exact host to the redirect or direct its root to `/admin/`; use the actual DNS values returned by the host. Separate origins require separate staff sign-in.
 7. Verify a test account can see default calendar while unassigned, assign it by exact email, then verify cohort events/RSVP. Test notification permission, closed-app receipt about one hour before a test event, cancellation/removal, sign-out and offline public navigation on a real iPhone and Android device. Run platform security advisors after activating the SQL.
 
 The 30-day affirmation pack and its explicit reviewable rotation decision are unchanged.

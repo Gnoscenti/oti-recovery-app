@@ -49,7 +49,7 @@
       ]
     }
   ],
-  "rewrites": [
+  "redirects": [
     {
       "source": "/",
       "has": [
@@ -58,7 +58,8 @@
           "value": "oti-recovery-admin.vercel.app"
         }
       ],
-      "destination": "/admin/index.html"
+      "destination": "/admin/",
+      "permanent": false
     }
   ]
 }

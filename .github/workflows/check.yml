@@ -25,7 +25,7 @@ jobs:
         with:
           deno-version: v2.x
       - name: Verify push server imports and types
-        run: deno check --config supabase/functions/event-reminders/deno.json supabase/functions/event-reminders/index.ts
+        run: deno check --frozen --config supabase/functions/event-reminders/deno.json supabase/functions/event-reminders/index.ts
       - name: Preserve server dependency lock
         uses: actions/upload-artifact@v4
         with:
