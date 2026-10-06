@@ -17,7 +17,11 @@ RSVP writes use the authenticated caller's identity. Participants see only their
 
 ## Product decision still open
 
-No affirmation content source is approved. Coach-authored posts remain available; the UI does not promise a fresh generated affirmation every day. Review choices: manually curated daily coach posts; an approved scheduled library; or a less frequent coach cadence. Choose source, editorial owner, timezone and missed-day behavior before automated scheduling. No production affirmation content is fabricated or auto-generated.
+The user selected the first affirmation on October 6:
+
+> What happened to me was not my fault. I am reclaiming my sense of safety one day at a time, and my healing journey deserves patience and respect
+
+It appears inside an authorized cohort Daily Affirmations topic when there is no later coach post. The review fixture uses the same wording. It is not attributed to a coach in production, assigned a fabricated date, or published on the home page. Coach-authored posts remain available; the UI does not promise a fresh generated affirmation every day. No ongoing library or automated cadence is approved. Review choices: manually curated daily coach posts; an approved scheduled library; or a less frequent coach cadence. Choose source, editorial owner, timezone and missed-day behavior before automated scheduling. No production affirmation content is fabricated or auto-generated.
 
 ## Preserved home features
 

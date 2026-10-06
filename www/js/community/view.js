@@ -8,6 +8,7 @@
  */
 import { el, append, icon, clear, toast, copyText } from '../dom.js';
 import * as H from './helpers.js';
+import { STARTER_AFFIRMATION } from './affirmations.js';
 
 /** @typedef {import('./api.js').CommunityApi} CommunityApi */
 /** @typedef {import('./helpers.js').Channel} Channel */
@@ -281,6 +282,7 @@ export function mountCommunity(root, ctx) {
 
     return el('div', { class: 'chan' },
       header,
+      !pinned && c.slug === 'affirmations' ? el('div', { class: 'pinned' }, el('span', { class: 'eyebrow' }, 'Starting affirmation'), el('p', {}, STARTER_AFFIRMATION)) : null,
       pinned ? el('div', { class: 'pinned' }, el('span', { class: 'eyebrow' }, 'Latest coach affirmation'), el('p', {}, pinned.body), el('span', { class: 'muted small' }, `${pinned.authorName} · ${H.dayLabel(new Date(pinned.createdAt), now)}`)) : null,
       list,
       canPost ? composer() : el('p', { class: 'about' }, 'You can read this topic but not post in it.'));

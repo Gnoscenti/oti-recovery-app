@@ -48,7 +48,7 @@ export function mountCohorts(root, api, section) {
     const cohort=cohorts.find(c=>c.id===selected);
     if(new Date(cohort.ends_at)<=new Date()||new Date(cohort.starts_at)>new Date()) {root.append(el('p',{},'This cohort is outside its active dates. Private activity and events are unavailable.'));return;}
     if(section==='activity') {
-      root.append(el('p',{class:'muted'},'Visible only in this cohort. Daily Affirmations are coach posts in Community; a new affirmation every day awaits approval of the content source and cadence.'));
+      root.append(el('p',{class:'muted'},'Visible only in this cohort. Daily Affirmations in Community start with the selected affirmation, followed by coach posts. Automatic daily changes await an approved ongoing source and cadence.'));
       const rows=await api.listActivities(selected);
       if(ticket!==generation||!root.isConnected)return;
       for(const a of rows)root.append(el('article',{class:'card'},el('h3',{},a.title),el('p',{},a.body)));

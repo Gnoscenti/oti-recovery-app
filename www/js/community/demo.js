@@ -8,6 +8,7 @@
  * supabase/seed.sql; the real enforcement is Row Level Security on the server.
  */
 import { demoCohorts } from '../cohorts/api.js';
+import { STARTER_AFFIRMATION } from './affirmations.js';
 import { hasLevel } from './helpers.js';
 
 /** @typedef {import('./api.js').CommunityApi} CommunityApi */
@@ -54,10 +55,10 @@ export function createDemoApi(opts = {}) {
     m('m3', 'c-events', users.board, 'Board note: we have 4 extra tickets from Here to Thrive sponsors for the Padres family night on the 18th. First come, first served.', 60 * 20),
     m('m4', 'c-events', others.tess, 'Monday group is still 7pm on Zoom this week, right?', 60 * 3),
     m('m5', 'c-events', users.coach, 'Yes, same link. See you all tonight.', 60 * 2 + 40),
-    m('a1', 'c-affirmations', users.coach, 'Today’s affirmation: I don’t have to have it all figured out to take the next right step.', 60 * 30),
+    m('a1', 'c-affirmations', users.coach, STARTER_AFFIRMATION, 60 * 30),
     m('a2', 'c-affirmations', others.maya, 'Needed this. Rough morning with school drop-off but I’m here.', 60 * 29),
     m('a3', 'c-affirmations', others.tess, 'Mine for today: my kids get the mom I’m becoming, not the one I was.', 60 * 27),
-    m('a4', 'c-affirmations', users.coach, 'Today’s affirmation: My past is a chapter, not the whole book. I get to write today.', 45),
+    m('a4', 'c-affirmations', users.coach, STARTER_AFFIRMATION, 45),
     m('a5', 'c-affirmations', others.maya, '❤️ Day 62 today.', 30),
   ];
 
