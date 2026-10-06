@@ -826,7 +826,7 @@ async function boot() {
   navigate();
   refreshRemoteContent();
 
-  if ('serviceWorker' in navigator && !native.isNative() && location.protocol === 'https:') {
+  if (!IS_REVIEW && 'serviceWorker' in navigator && !native.isNative() && location.protocol === 'https:') {
     navigator.serviceWorker.register('sw.js').catch(() => { /* optional */ });
   }
 }
