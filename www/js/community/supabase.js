@@ -5,6 +5,7 @@
  * Row Level Security in supabase/schema.sql decides what comes back. This file
  * only shapes rows for the UI.
  */
+import { cohortApi } from '../cohorts/api.js';
 import { createClient } from '@supabase/supabase-js';
 
 /** @typedef {import('./api.js').CommunityApi} CommunityApi */
@@ -42,6 +43,7 @@ export function createSupabaseApi(cfg) {
   }
 
   return {
+    ...cohortApi(client),
     mode: 'supabase',
 
     async getSession() {
@@ -91,16 +93,17 @@ export function createSupabaseApi(cfg) {
     },
 
     async listChannels() {
-      const [{ data: ch, error: e1 }, { data: acc, error: e2 }, prof] = await Promise.all([
-        client.from('channels').select('id, slug, name, description, pin_moderator_latest, sort_order').order('sort_order'),
+      const [{ data: ch, error: e1 }, { data: acc, error: e2 }, prof, cohorts] = await Promise.all([
+        client.from('channels').select('id, slug, name, description, pin_moderator_latest, sort_order, cohort_id').order('sort_order'),
         client.from('channel_access').select('channel_id, role, level'),
         this.getMe(),
+        client.from('cohorts').select('id,name').then(({data,error})=>{raise(error);return data||[];}),
       ]);
       raise(e1); raise(e2);
       return (ch || []).map((c) => {
         const access = (acc || []).filter((a) => a.channel_id === c.id).map((a) => ({ role: a.role, level: a.level }));
         const mine = access.find((a) => a.role === prof?.role);
-        return { id: c.id, slug: c.slug, name: c.name, description: c.description, pinModeratorLatest: c.pin_moderator_latest, access, myLevel: mine ? mine.level : null };
+        return { id: c.id, slug: c.slug, name: c.name + ' · ' + (cohorts.find(x=>x.id===c.cohort_id)?.name||'Cohort'), description: c.description + ' · Private cohort', pinModeratorLatest: c.pin_moderator_latest, access, myLevel: mine ? mine.level : null };
       });
     },
 
@@ -211,3 +214,4 @@ export function createSupabaseApi(cfg) {
     },
   };
 }
+

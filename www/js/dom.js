@@ -8,10 +8,11 @@
 /** @typedef {Array<Child>} ChildArray */
 
 /**
- * @param {string} tag
+ * @template {keyof HTMLElementTagNameMap} K
+ * @param {K} tag
  * @param {Record<string, any>} [attrs]
  * @param {...Child} children
- * @returns {HTMLElement}
+ * @returns {HTMLElementTagNameMap[K]}
  */
 export function el(tag, attrs = {}, ...children) {
   const node = document.createElement(tag);
@@ -96,3 +97,4 @@ export async function copyText(text) {
     return ok;
   } catch { return false; }
 }
+

@@ -281,7 +281,7 @@ export function mountCommunity(root, ctx) {
 
     return el('div', { class: 'chan' },
       header,
-      pinned ? el('div', { class: 'pinned' }, el('span', { class: 'eyebrow' }, 'Today’s affirmation'), el('p', {}, pinned.body), el('span', { class: 'muted small' }, `${pinned.authorName} · ${H.dayLabel(new Date(pinned.createdAt), now)}`)) : null,
+      pinned ? el('div', { class: 'pinned' }, el('span', { class: 'eyebrow' }, 'Latest coach affirmation'), el('p', {}, pinned.body), el('span', { class: 'muted small' }, `${pinned.authorName} · ${H.dayLabel(new Date(pinned.createdAt), now)}`)) : null,
       list,
       canPost ? composer() : el('p', { class: 'about' }, 'You can read this topic but not post in it.'));
   }
@@ -435,7 +435,7 @@ export function mountCommunity(root, ctx) {
     } },
       el('div', { class: 'field' }, el('label', { for: 'mem-email' }, 'Email'), email),
       el('div', { class: 'grid-2' }, el('div', { class: 'field' }, el('label', { for: 'mem-role' }, 'Role'), role), el('div', { class: 'field' }, el('label', { for: 'mem-note' }, 'Note'), note)),
-      el('p', { class: 'help' }, 'Participants see Events and Daily Affirmations. Board members see Events only. The coach sees and moderates both. Admins manage members and moderate Events, and do not see Daily Affirmations.'),
+      el('p', { class: 'help' }, 'Participants and assigned coaches see their cohort topics. Board members have no cohort access. Admins manage members and cohort event logistics, and do not see Daily Affirmations.'),
       err,
       el('button', { class: 'btn primary', type: 'submit' }, 'Add member'));
 
@@ -487,7 +487,8 @@ export function mountCommunity(root, ctx) {
   init();
   return {
     handleBack: back,
-    refresh: async () => { if (state.screen === 'channels') { try { await loadChannels(); render(); } catch { /* keep */ } } },
+    refresh: async () => { leaveChannel(); state.messages = []; await init(); },
     destroy: () => { leaveChannel(); },
   };
 }
+

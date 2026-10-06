@@ -7,6 +7,7 @@
  * Names and messages are fictional. It mirrors the visibility matrix in
  * supabase/seed.sql; the real enforcement is Row Level Security on the server.
  */
+import { demoCohorts } from '../cohorts/api.js';
 import { hasLevel } from './helpers.js';
 
 /** @typedef {import('./api.js').CommunityApi} CommunityApi */
@@ -15,7 +16,7 @@ import { hasLevel } from './helpers.js';
 /** @typedef {import('./helpers.js').Level} Level */
 
 const MATRIX = /** @type {Record<string, Partial<Record<Role, Level>>>} */ ({
-  events: { participant: 'post', board: 'post', coach: 'moderate', admin: 'moderate' },
+  events: { participant: 'post', coach: 'moderate' },
   affirmations: { participant: 'post', coach: 'moderate' },
 });
 
@@ -90,6 +91,7 @@ export function createDemoApi(opts = {}) {
   function levelFor(channelId) {
     const v = viewer(); if (!v) return null;
     const c = channels.find((x) => x.id === channelId); if (!c) return null;
+    if (!cohort.cohortMember('sample-a')) return null;
     return MATRIX[c.slug][v.role] || null;
   }
   /** @param {string} id */
@@ -104,7 +106,9 @@ export function createDemoApi(opts = {}) {
   /** @param {any} u */
   function session(u) { return u ? { userId: u.id, email: u.email } : null; }
 
+  const cohort = demoCohorts(viewer, now);
   return {
+    ...cohort,
     mode: 'demo',
     setViewer(role) { viewerKey = /** @type {any} */ (role); authListeners.forEach((cb) => cb(session(viewer()))); },
     viewer() { return viewerKey; },
@@ -198,7 +202,7 @@ export function createDemoApi(opts = {}) {
     },
     subscribe(channelId, onChange) {
       /** @param {Message} msg @param {'insert'|'update'} kind */
-      const cb = (msg, kind) => { if (msg.channelId === channelId) onChange(msg, kind); };
+      const cb = (msg, kind) => { if (msg.channelId === channelId && visible(msg)) onChange(msg, kind); };
       listeners.add(cb);
       return () => listeners.delete(cb);
     },
@@ -228,3 +232,4 @@ export function createDemoApi(opts = {}) {
     return { id, channelId, authorId: author.id, authorName: author.displayName, authorRole: author.role, body, createdAt: iso(minutesAgo), editedAt: null, hiddenAt: null };
   }
 }
+

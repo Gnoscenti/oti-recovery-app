@@ -74,9 +74,9 @@ test('demo adapter mirrors the visibility matrix per role', async () => {
   const api = createDemoApi({ now: () => NOW });
   const slugs = async () => (await api.listChannels()).map((c) => c.slug);
   api.setViewer('participant'); assert.deepEqual(await slugs(), ['events', 'affirmations']);
-  api.setViewer('board'); assert.deepEqual(await slugs(), ['events']);
+  api.setViewer('board'); assert.deepEqual(await slugs(), []);
   api.setViewer('coach'); assert.deepEqual(await slugs(), ['events', 'affirmations']);
-  api.setViewer('admin'); assert.deepEqual(await slugs(), ['events']);
+  api.setViewer('admin'); assert.deepEqual(await slugs(), []);
   api.setViewer('pending'); assert.deepEqual(await slugs(), []);
   api.setViewer('signed-out'); assert.equal(await api.getSession(), null);
   api.setViewer('board');
@@ -92,6 +92,9 @@ test('demo adapter: posting, moderation, reports, unread, and the onboarding gat
   assert.equal((await api.getMe()).displayName, '');
   await assert.rejects(api.sendMessage('c-events', 'hello'), /row-level security|name_required/);
   await api.updateMe({ displayName: 'Nell', acceptGuidelines: true });
+  api.setViewer('coach');
+  await api.assignCohort('sample-a','u-newmember',true);
+  api.setViewer('newmember');
   const sent = await api.sendMessage('c-events', 'hello from Nell');
   assert.equal(sent.authorName, 'Nell');
   await assert.rejects(api.sendMessage('c-events', 'again'), /slow_down/);
@@ -108,6 +111,8 @@ test('demo adapter: posting, moderation, reports, unread, and the onboarding gat
   assert.ok((await api.listMessages('c-events')).some((m) => m.id === sent.id), 'author still sees own hidden post');
   api.setViewer('board');
   await assert.rejects(api.hideMessage(sent.id, false), /not_allowed/);
+  await assert.rejects(api.reportMessage('m1', 'test'), /not_allowed/);
+  api.setViewer('participant');
   await api.reportMessage('m1', 'test');
   api.setViewer('coach');
   const reports = await api.listOpenReports();
@@ -129,3 +134,4 @@ test('demo sign-in flow uses the sample code', async () => {
   const s = await api.verifyCode('someone@example.org', '123 456');
   assert.ok(s.userId);
 });
+
