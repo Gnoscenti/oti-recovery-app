@@ -132,68 +132,6 @@
         "title": "OTI support group tonight",
         "body": "The Online Recovery Support Group starts at 7:00 PM. You've got this."
       }
-    },
-    {
-      "id": "here-to-thrive-2026",
-      "title": "Here to Thrive 2026: An Evening of Impact and Vision",
-      "type": "event",
-      "description": "Celebrating mothers who thrive and the community that makes it possible. Dinner, dessert, and an inspiring evening of community, connection, and impact. Guest tickets $55. Dinner party attire (casual to fancy). Seating is limited.",
-      "location": {
-        "name": "KPBS Community Engagement Center",
-        "address": "San Diego, CA"
-      },
-      "start": "2026-09-25T18:00",
-      "end": "2026-09-25T21:00",
-      "timezone": "America/Los_Angeles",
-      "recurrence": null,
-      "image": "assets/here-to-thrive.jpg",
-      "links": [
-        {
-          "label": "Register / tickets",
-          "url": "https://donorbox.org/events/955829/steps/choose_tickets",
-          "kind": "register"
-        },
-        {
-          "label": "Event page",
-          "url": "https://www.otirecovery.org/heretothrive",
-          "kind": "info"
-        }
-      ]
-    },
-    {
-      "id": "prcb-sept-2026",
-      "title": "Peer Recovery Coach Blueprint (1-week cohort)",
-      "type": "training",
-      "description": "Empowering peer supporters in SUD recovery with tools, confidence, and certification-aligned skills. 7.5 CE hours. Mon\u2013Fri, 3:30\u20135:00 PM. For peer support specialists, individuals in recovery, and family members.",
-      "location": {
-        "name": "Online"
-      },
-      "start": "2026-09-14T15:30",
-      "end": "2026-09-14T17:00",
-      "timezone": "America/Los_Angeles",
-      "recurrence": {
-        "freq": "weekly",
-        "byDay": [
-          "MO",
-          "TU",
-          "WE",
-          "TH",
-          "FR"
-        ],
-        "until": "2026-09-18"
-      },
-      "links": [
-        {
-          "label": "Enroll",
-          "url": "https://otirecoverytraining.thinkific.com/products/courses/peerrecoverycoachblueprint",
-          "kind": "register"
-        },
-        {
-          "label": "Agency enrollment form",
-          "url": "https://forms.gle/u7o6ENtbwFWsGAtw8",
-          "kind": "info"
-        }
-      ]
     }
   ],
   "unscheduled": [

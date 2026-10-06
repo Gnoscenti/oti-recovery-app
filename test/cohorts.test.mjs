@@ -54,6 +54,6 @@ test('public content/navigation retain liked features and remove rejected sectio
  assert.match(html,/data-tab="activity"/);assert.doesNotMatch(html,/data-tab="tools"/);
  const app=await readFile(new URL('../www/js/app.js',import.meta.url),'utf8');
  for(const name of ['Count your days','Ride the urge','Stories of impact'])assert.ok(app.includes(name));
- assert.ok(c.events.some(e=>e.id==='monday-group'));
+ assert.deepEqual(c.events.map(e=>e.id),['monday-group']);
  assert.doesNotMatch(app,/'Donate'|'Business sponsors'|Recovery communities & help/);
 });

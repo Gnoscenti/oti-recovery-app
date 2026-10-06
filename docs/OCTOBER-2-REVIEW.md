@@ -21,4 +21,4 @@ No affirmation content source is approved. Coach-authored posts remain available
 
 ## Preserved home features
 
-Device-only day count, Ride the Urge, online recovery group and Stories of Impact remain. Donation/sponsor links and the Recovery Communities list are removed; help lines are exactly 988 and Never Use Alone. Personal saved contacts remain device-only. Activity replaces Tools in navigation while retaining the liked recovery utilities.
+The existing online recovery support group remains the only public home-page program event, as explicitly requested. Other legacy static events are removed; cohort calendar events come only from the private API. Device-only day count, Ride the Urge, online recovery group and Stories of Impact remain. Donation/sponsor links and the Recovery Communities list are removed; help lines are exactly 988 and Never Use Alone. Personal saved contacts remain device-only. Activity replaces Tools in navigation while retaining the liked recovery utilities.
