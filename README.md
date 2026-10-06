@@ -5,15 +5,15 @@ Companion app for [Over the Influence Recovery](https://www.otirecovery.org), a 
 | Tab | What it does |
 | --- | --- |
 | Home | Online support group, device-only day counter, Ride the Urge, mission and Stories of Impact |
-| Calendar | Private cohort events; admins/coaches create events and send private in-app messages by RSVP status; cohort members RSVP |
+| Calendar | Default public calendar plus the signed-in participant’s assigned cohort events, RSVP and private inbox; unassigned sign-ins see only the default calendar |
 | Phones | 988 and Never Use Alone; My People contacts remain on-device |
-| Activity | Cohort activities, admin/coach membership controls, and device-only recovery utilities |
+| Activity | Assigned cohort activities and device-only recovery utilities |
 | Community | Cohort-scoped Events and Daily Affirmations for participants and assigned coaches; sign-in, moderation and admin account controls. Automated affirmation cadence awaits content-source approval |
 | More (top-right) | T.H.R.I.V.E. and other programs, stories of impact, newsletters, peer training (CE), get involved, social, about/privacy |
 
-**Privacy:** no analytics, no ads. The sobriety date and contacts stay in the device's local storage; Android auto-backup is off. The optional Community stores email, display name, and posts on OTI's Supabase project, gated by Row Level Security (`supabase/schema.sql` + `supabase/cohorts.sql`).
+**Privacy:** no analytics, no ads. The sobriety date and contacts stay in the device's local storage; Android auto-backup is off. The optional Community stores email, display name, and posts on OTI's Supabase project, gated by Row Level Security (`supabase/schema.sql` + `supabase/cohorts.sql` + `supabase/admin-reminders.sql`).
 
-**October 2 requirements:** [Review and activation guide](docs/OCTOBER-2-REVIEW.md) supersedes the older Community spec/setup where they describe global role-only topics. Activate with `schema.sql`, then `seed.sql`, then `cohorts.sql` once. Existing unscoped topics fail closed until their audience is deliberately migrated. Do not put private cohort events, affirmations or messages in public content.json. Cohort membership is never self-service.
+**October 2 requirements:** [Review and activation guide](docs/OCTOBER-2-REVIEW.md) supersedes the older Community spec/setup where they describe global role-only topics. Activate with `schema.sql`, then `seed.sql`, then `cohorts.sql` and `admin-reminders.sql` once. Existing unscoped topics fail closed until their audience is deliberately migrated. Do not put private cohort events, affirmations or messages in public content.json. Cohort membership is never self-service.
 
 ## Stack
 
@@ -45,7 +45,7 @@ npm run assets       # regenerate native icons/splash from resources/
 
 Edit `www/data/content.json`, bump `version` (YYYY-MM-DD), run `npm run validate:content`.
 
-- The only public program event is the preserved online support group. Private events are created in the cohort Calendar, never content.json. Public program events use wall-clock Pacific times (`"start": "2026-10-05T19:00"`, `"timezone": "America/Los_Angeles"`). Weekly recurrence: `{ "freq": "weekly", "byDay": ["MO"], "until": "2026-12-31", "exdates": ["2026-11-30"] }`. Times convert correctly across daylight saving and for users in other time zones.
+- The only public program event is the preserved online support group. Private events are created in the staff portal, never content.json. Public program events use wall-clock Pacific times (`"start": "2026-10-05T19:00"`, `"timezone": "America/Los_Angeles"`). Weekly recurrence: `{ "freq": "weekly", "byDay": ["MO"], "until": "2026-12-31", "exdates": ["2026-11-30"] }`. Times convert correctly across daylight saving and for users in other time zones.
 - **Phones** need `number` as digits only (`"18006624357"`) plus a human `display`. Set `number: null` for text-only lines and add `sms: { "number": "741741", "body": "HOME" }`.
 - **Testimonials** must be real and consented; the app renders exactly what is in the file.
 - With `remoteContentUrl` set in `www/js/config.js`, published changes reach installed apps on next launch without a store release.
@@ -68,7 +68,7 @@ STORE-LAUNCH.md      step-by-step store submission guide
 
 ## Tests
 
-`npm test` covers the calendar engine (recurrence, DST, ranges, multi-day, upcoming ordering, Google Calendar links, day counting), the phone helpers (formatting, validation, tel:/sms: links, search, grouping), the Community authorization layer (24 tests against the real schema in an in-process Postgres), the Community UI helpers and demo adapter, and cohort RLS tests for isolation, assignment, expiration, RSVP ownership and private status-targeted messages. Check also runs `scripts/test-chrome.mjs` against the synthetic review site in desktop and mobile Chromium.
+`npm test` covers the calendar engine (recurrence, DST, ranges, multi-day, upcoming ordering, Google Calendar links, day counting), the phone helpers (formatting, validation, tel:/sms: links, search, grouping), the Community authorization layer (24 tests against the real schema in an in-process Postgres), the Community UI helpers and demo adapter, and cohort RLS tests for isolation, assignment, expiration, RSVP ownership and private status-targeted messages. Check also runs `scripts/test-chrome.mjs` against the synthetic review site in desktop and mobile Chromium and Safari/WebKit. It also checks the server-only push dispatcher with Deno.
 
 
 See [Admin, mobile Home Screen app and one-hour reminders](docs/ADMIN-MOBILE-REMINDERS.md) for the latest calendar behavior, staff portal, privacy boundaries and production activation.
