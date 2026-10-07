@@ -26,7 +26,7 @@ try {
 
 if (!isDate(c.version)) err('version must be YYYY-MM-DD (bump it whenever content changes)');
 if (!c.org || typeof c.org.name !== 'string') err('org.name is required');
-for (const k of ['website', 'donateUrl', 'contactUrl', 'sponsorsUrl']) if (!isUrl(c.org?.[k])) err(`org.${k} must be a URL`);
+for (const k of ['website', 'contactUrl']) if (!isUrl(c.org?.[k])) err(`org.${k} must be a URL`);
 if (c.org?.phone != null && !/^\d{3,15}$/.test(c.org.phone)) err('org.phone must be digits only (or null)');
 if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.org?.email || '')) err('org.email must be an email address');
 
@@ -78,3 +78,4 @@ if (errors.length) {
   process.exit(1);
 }
 console.log(`content.json OK: ${c.events.length} events, ${c.phones.length} phone lines, ${c.testimonials.length} stories, ${c.recoveryLinks.length} links (version ${c.version})`);
+

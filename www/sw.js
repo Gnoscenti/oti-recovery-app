@@ -34,3 +34,26 @@ self.addEventListener('fetch', (event) => {
   }
   event.respondWith(caches.match(req).then((hit) => hit || fetch(req)));
 });
+
+
+// Lock-screen notifications never contain cohort names, participant names or event details.
+self.addEventListener('push', (event) => {
+  let expires;
+  try { expires=Date.parse(event.data?.json()?.expires_at); } catch { /* use generic fallback */ }
+  const upcoming=Number.isFinite(expires)&&expires>Date.now();
+  event.waitUntil(self.registration.showNotification('Event reminder', {
+    body: upcoming?'An event on your calendar starts in one hour. Open the app for details.':'Open the app to check your calendar.',
+    icon:'/assets/icon-192.png',badge:'/assets/icon-192.png',
+    tag:`calendar-reminder-${Number.isFinite(expires)?expires:'event'}`,
+    data:{url:'/#calendar'},
+  }));
+});
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil((async()=>{
+    const target=new URL('/#calendar',self.location.origin).href;
+    const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+    const app=windows.find(w=>new URL(w.url).origin===self.location.origin&&!new URL(w.url).pathname.startsWith('/admin'));
+    if(app){await app.navigate(target);await app.focus();}else await self.clients.openWindow(target);
+  })());
+});

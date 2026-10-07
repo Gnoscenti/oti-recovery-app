@@ -7,6 +7,8 @@
  * Names and messages are fictional. It mirrors the visibility matrix in
  * supabase/seed.sql; the real enforcement is Row Level Security on the server.
  */
+import { demoCohorts } from '../cohorts/api.js';
+import { STARTER_AFFIRMATION } from './affirmations.js';
 import { hasLevel } from './helpers.js';
 
 /** @typedef {import('./api.js').CommunityApi} CommunityApi */
@@ -15,13 +17,13 @@ import { hasLevel } from './helpers.js';
 /** @typedef {import('./helpers.js').Level} Level */
 
 const MATRIX = /** @type {Record<string, Partial<Record<Role, Level>>>} */ ({
-  events: { participant: 'post', board: 'post', coach: 'moderate', admin: 'moderate' },
+  events: { participant: 'post', coach: 'moderate' },
   affirmations: { participant: 'post', coach: 'moderate' },
 });
 
 /**
  * @param {{now?: () => Date, viewerRole?: Role}} [opts]
- * @returns {CommunityApi & {setViewer: (role: 'participant'|'coach'|'board'|'admin'|'newmember'|'pending'|'signed-out') => void, viewer: () => string}}
+ * @returns {CommunityApi & {setViewer: (role: 'participant'|'coach'|'board'|'admin'|'gigi'|'newmember'|'pending'|'signed-out') => void, viewer: () => string}}
  */
 export function createDemoApi(opts = {}) {
   const now = opts.now || (() => new Date());
@@ -30,9 +32,10 @@ export function createDemoApi(opts = {}) {
   const users = {
     participant: { id: 'u-sample-participant', email: 'sample.participant@example.org', displayName: 'Sam', role: /** @type {Role} */ ('participant') },
     newmember: { id: 'u-newmember', email: 'newmember@example.org', displayName: '', role: /** @type {Role} */ ('participant') },
-    coach: { id: 'u-gigi', email: 'coach@example.org', displayName: 'Gigi', role: /** @type {Role} */ ('coach') },
+    coach: { id: 'u-coach', email: 'coach@example.org', displayName: 'Sample coach', role: /** @type {Role} */ ('coach') },
     board: { id: 'u-board', email: 'board@example.org', displayName: 'Dana (board)', role: /** @type {Role} */ ('board') },
     admin: { id: 'u-admin', email: 'admin@example.org', displayName: 'Julie', role: /** @type {Role} */ ('admin') },
+    gigi: { id: 'u-gigi', email: 'gigi.admin@example.org', displayName: 'Gigi', role: /** @type {Role} */ ('admin') },
     pending: { id: 'u-pending', email: 'newperson@example.org', displayName: '', role: /** @type {Role} */ ('none') },
   };
   const others = {
@@ -40,6 +43,7 @@ export function createDemoApi(opts = {}) {
     tess: { id: 'u-tess', displayName: 'Tess R.', role: /** @type {Role} */ ('participant') },
   };
 
+  /** @type {Array<{id:string,slug:string,name:string,description:string,pinModeratorLatest:boolean,sortOrder:number,cohortId?:string}>} */
   const channels = [
     { id: 'c-events', slug: 'events', name: 'Events', description: 'Upcoming OTI events, TnT outings, rides, and who is coming.', pinModeratorLatest: false, sortOrder: 10 },
     { id: 'c-affirmations', slug: 'affirmations', name: 'Daily Affirmations', description: 'A daily affirmation from your coach, and a place to share yours.', pinModeratorLatest: true, sortOrder: 20 },
@@ -52,10 +56,10 @@ export function createDemoApi(opts = {}) {
     m('m3', 'c-events', users.board, 'Board note: we have 4 extra tickets from Here to Thrive sponsors for the Padres family night on the 18th. First come, first served.', 60 * 20),
     m('m4', 'c-events', others.tess, 'Monday group is still 7pm on Zoom this week, right?', 60 * 3),
     m('m5', 'c-events', users.coach, 'Yes, same link. See you all tonight.', 60 * 2 + 40),
-    m('a1', 'c-affirmations', users.coach, 'Today’s affirmation: I don’t have to have it all figured out to take the next right step.', 60 * 30),
+    m('a1', 'c-affirmations', users.coach, STARTER_AFFIRMATION, 60 * 30),
     m('a2', 'c-affirmations', others.maya, 'Needed this. Rough morning with school drop-off but I’m here.', 60 * 29),
     m('a3', 'c-affirmations', others.tess, 'Mine for today: my kids get the mom I’m becoming, not the one I was.', 60 * 27),
-    m('a4', 'c-affirmations', users.coach, 'Today’s affirmation: My past is a chapter, not the whole book. I get to write today.', 45),
+    m('a4', 'c-affirmations', users.coach, STARTER_AFFIRMATION, 45),
     m('a5', 'c-affirmations', others.maya, '❤️ Day 62 today.', 30),
   ];
 
@@ -64,12 +68,13 @@ export function createDemoApi(opts = {}) {
   /** @type {Record<string, string>} */
   const readMarks = {};
   /** @type {Set<string>} */
-  const accepted = new Set(['u-gigi', 'u-board', 'u-admin', 'u-sample-participant']);
+  const accepted = new Set(['u-coach', 'u-gigi', 'u-board', 'u-admin', 'u-sample-participant']);
   /** @type {Record<string, string>} */
   const names = Object.fromEntries(Object.values(users).map((u) => [u.id, u.displayName]));
   /** @type {Array<{email:string, role:Role, note:string|null, addedAt:string, redeemedAt:string|null, redeemedBy:string|null}>} */
   const allowlist = [
-    { email: 'coach@example.org', role: 'coach', note: 'Gigi', addedAt: iso(60 * 24 * 30), redeemedAt: iso(60 * 24 * 29), redeemedBy: 'u-gigi' },
+    { email: 'gigi.admin@example.org', role: 'admin', note: 'Gigi (review)', addedAt: iso(60), redeemedAt: iso(30), redeemedBy: 'u-gigi' },
+    { email: 'coach@example.org', role: 'coach', note: 'Sample coach', addedAt: iso(60 * 24 * 30), redeemedAt: iso(60 * 24 * 29), redeemedBy: 'u-coach' },
     { email: 'board@example.org', role: 'board', note: 'Dana', addedAt: iso(60 * 24 * 20), redeemedAt: iso(60 * 24 * 19), redeemedBy: 'u-board' },
     { email: 'maya@example.org', role: 'participant', note: null, addedAt: iso(60 * 24 * 10), redeemedAt: iso(60 * 24 * 9), redeemedBy: 'u-maya' },
     { email: 'tess@example.org', role: 'participant', note: null, addedAt: iso(60 * 24 * 8), redeemedAt: iso(60 * 24 * 8), redeemedBy: 'u-tess' },
@@ -85,11 +90,12 @@ export function createDemoApi(opts = {}) {
   /** @type {Set<(s: import('./api.js').Session|null) => void>} */
   const authListeners = new Set();
 
-  function viewer() { return viewerKey === 'signed-out' ? null : users[viewerKey]; }
+  function viewer() {const u=viewerKey==='signed-out'?null:users[viewerKey];return u?{...u,status:removed.has(u.id)?'removed':'active'}:null;}
   /** @param {string} channelId */
   function levelFor(channelId) {
     const v = viewer(); if (!v) return null;
     const c = channels.find((x) => x.id === channelId); if (!c) return null;
+    if (!cohort.cohortMember(c.cohortId || 'sample-a')) return null;
     return MATRIX[c.slug][v.role] || null;
   }
   /** @param {string} id */
@@ -104,7 +110,28 @@ export function createDemoApi(opts = {}) {
   /** @param {any} u */
   function session(u) { return u ? { userId: u.id, email: u.email } : null; }
 
+  const cohort = demoCohorts(viewer, now);
+  const removed=new Set();
+  const audit=[];
+  const requireAdmin=()=>{if(viewer()?.role!=='admin')throw new Error('not_allowed');};
   return {
+    ...cohort,
+    async createCohort(name, starts, ends) {
+      const id = await cohort.createCohort(name, starts, ends);
+      for (const slug of ['events','affirmations']) channels.push({ id: id+'-'+slug, cohortId:id, slug, name:(slug==='events'?'Events':'Daily Affirmations')+' · '+name, description: 'Private cohort topic; cadence awaiting review.', pinModeratorLatest:slug==='affirmations', sortOrder:slug==='events'?10:20 });
+      return id;
+    },
+    async assignCohortByLogin(cid,email,add) {
+      if(!['admin','coach'].includes(viewer()?.role||''))throw new Error('not_allowed');
+      const login=email.trim().toLowerCase();const uid=Object.values(users).find(u=>u.email===login)?.id||allowlist.find(a=>a.email===login)?.redeemedBy;
+      if(!uid)throw new Error('No active participant has that login email.');
+      await cohort.assignCohort(cid,uid,add);audit.push({action:add?'assign':'remove',entity_type:'cohort_members',created_at:now().toISOString()});
+    },
+    async registerParticipant(email,cid) {requireAdmin();const login=email.trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(login))throw new Error('invalid email');await this.addMember(login,'participant','');if(cid){const u=Object.values(users).find(u=>u.email===login);if(u)await cohort.assignCohort(cid,u.id,true);}audit.push({action:'register',entity_type:'participant',created_at:now().toISOString()});},
+    async manageParticipant(uid,role,status) {requireAdmin();if(uid===viewer()?.id)throw new Error('Cannot change your own staff access.');const u=Object.values(users).find(u=>u.id===uid);if(u){u.role=role;if(status==='removed')removed.add(uid);else removed.delete(uid);}audit.push({action:'access_change',entity_type:'participant',created_at:now().toISOString()});},
+    async adminAudit() {requireAdmin();return structuredClone(audit);},
+    async savePushSubscription() {throw new Error('Review copies do not send notifications.');},
+    async deletePushSubscription() {},
     mode: 'demo',
     setViewer(role) { viewerKey = /** @type {any} */ (role); authListeners.forEach((cb) => cb(session(viewer()))); },
     viewer() { return viewerKey; },
@@ -121,7 +148,7 @@ export function createDemoApi(opts = {}) {
     async signOut() { this.setViewer('signed-out'); },
     async getMe() {
       const v = viewer(); if (!v) return null;
-      return { id: v.id, displayName: names[v.id] ?? v.displayName, role: v.role, status: 'active', acceptedGuidelines: accepted.has(v.id) };
+      return { id: v.id, displayName: names[v.id] ?? v.displayName, role: v.role, status: removed.has(v.id)?'removed':'active', acceptedGuidelines: accepted.has(v.id) };
     },
     async updateMe(patch) {
       const v = viewer(); if (!v) throw new Error('not signed in');
@@ -198,13 +225,13 @@ export function createDemoApi(opts = {}) {
     },
     subscribe(channelId, onChange) {
       /** @param {Message} msg @param {'insert'|'update'} kind */
-      const cb = (msg, kind) => { if (msg.channelId === channelId) onChange(msg, kind); };
+      const cb = (msg, kind) => { if (msg.channelId === channelId && visible(msg)) onChange(msg, kind); };
       listeners.add(cb);
       return () => listeners.delete(cb);
     },
     async listMembers() {
       const v = viewer(); if (!v || v.role !== 'admin') throw new Error('not_allowed');
-      const profiles = [...Object.values(users).filter((u) => u.role !== 'none' && u.id !== 'u-newmember'), ...Object.values(others)].map((u) => ({ id: u.id, displayName: names[u.id] ?? u.displayName, role: u.role, status: /** @type {'active'} */ ('active'), createdAt: iso(60 * 24 * 5) }));
+      const profiles = [...Object.values(users).filter((u) => u.role !== 'none' && u.id !== 'u-newmember'), ...Object.values(others)].map((u) => ({ id: u.id, displayName: names[u.id] ?? u.displayName, role: u.role, status: /** @type {'active'|'removed'} */ (removed.has(u.id)?'removed':'active'), createdAt: iso(60 * 24 * 5) }));
       return { allowlist: [...allowlist], profiles };
     },
     async addMember(email, role, note) {
@@ -213,9 +240,10 @@ export function createDemoApi(opts = {}) {
       if (existing) { existing.role = role; existing.note = note || null; }
       else allowlist.unshift({ email, role, note: note || null, addedAt: now().toISOString(), redeemedAt: null, redeemedBy: null });
     },
-    async setMemberRole(email, role) { const a = allowlist.find((x) => x.email === email); if (a) a.role = role; },
+    async setMemberRole(email, role) { requireAdmin();const a = allowlist.find((x) => x.email === email); if (a) a.role = role; },
     async removeMember(userId) {
       const v = viewer(); if (!v || v.role !== 'admin') throw new Error('not_allowed');
+      removed.add(userId);
       messages = messages.map((x) => (x.authorId === userId ? { ...x, authorName: 'Former member' } : x));
     },
   };
@@ -228,3 +256,4 @@ export function createDemoApi(opts = {}) {
     return { id, channelId, authorId: author.id, authorName: author.displayName, authorRole: author.role, body, createdAt: iso(minutesAgo), editedAt: null, hiddenAt: null };
   }
 }
+

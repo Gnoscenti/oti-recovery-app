@@ -3,8 +3,11 @@
  * Build-time and deployment configuration. `__APP_VERSION__` is replaced by
  * scripts/build.mjs with the version from package.json.
  */
+const publicConfig=/** @type {any} */(window).__OTI_PUBLIC_CONFIG__||{};
 export const CONFIG = {
   appVersion: '__APP_VERSION__',
+  pushPublicKey: /** @type {string|null} */ (publicConfig.pushPublicKey||null), // public VAPID key; private key stays on the server
+  adminUrl: '/admin/',
 
   /**
    * Optional: a public HTTPS URL of a newer content.json. When set, the app
@@ -28,9 +31,10 @@ export const CONFIG = {
    * Until both values are set, the Community tab shows "not switched on yet".
    */
   community: {
-    supabaseUrl: /** @type {string|null} */ (null),      // e.g. 'https://abcdefghijkl.supabase.co'
-    supabaseAnonKey: /** @type {string|null} */ (null),  // the project's anon/public key
+    supabaseUrl: /** @type {string|null} */ (publicConfig.supabaseUrl||null),      // e.g. 'https://abcdefghijkl.supabase.co'
+    supabaseAnonKey: /** @type {string|null} */ (publicConfig.supabasePublicKey||null),  // the project's anon/public key
     pollSeconds: 45,        // fallback refresh when realtime is unavailable
     demo: false,            // true = sample data, no sign-in (review builds set this automatically)
   },
 };
+

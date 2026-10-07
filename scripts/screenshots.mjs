@@ -34,20 +34,13 @@ try {
         localStorage.setItem('oti.people', JSON.stringify([{ id: '1', name: 'Coach Dana', number: '6195550100', note: 'my coach' }]));
       } catch {}
     });
-    for (const tab of ['home', 'calendar', 'phones', 'tools', 'more', 'community']) {
+    for (const tab of ['home', 'calendar', 'phones', 'activity', 'more', 'community']) {
       await page.goto(`http://localhost:${port}/index.html#${tab}`);
       await page.waitForSelector(`#view-${tab}:not([hidden])`);
       await page.evaluate(() => document.fonts.ready);
       await page.waitForTimeout(250);
       await page.screenshot({ path: path.join(out, `${tab}${suffix}.png`) });
     }
-    // Event detail sheet
-    await page.goto(`http://localhost:${port}/index.html#calendar`);
-    await page.waitForSelector('#view-calendar:not([hidden])');
-    await page.click('#view-calendar .event-row');
-    await page.waitForSelector('#sheet:not([hidden])');
-    await page.waitForTimeout(200);
-    await page.screenshot({ path: path.join(out, `event${suffix}.png`) });
     // Community: a topic open (sample data)
     await page.goto(`http://localhost:${port}/index.html#community`);
     await page.waitForSelector('#view-community .topic');
@@ -62,9 +55,9 @@ try {
     await page.waitForTimeout(250);
     await page.screenshot({ path: path.join(out, `community-affirmations${suffix}.png`) });
     // Breathing tool open
-    await page.goto(`http://localhost:${port}/index.html#tools`);
-    await page.waitForSelector('#view-tools:not([hidden])');
-    await page.click('#view-tools .tool');
+    await page.goto(`http://localhost:${port}/index.html#activity`);
+    await page.waitForSelector('#view-activity:not([hidden])');
+    await page.click('#view-activity .tool');
     await page.waitForTimeout(200);
     await page.screenshot({ path: path.join(out, `breathe${suffix}.png`) });
     await ctx.close();
@@ -74,3 +67,4 @@ try {
   await browser.close();
   server.kill();
 }
+

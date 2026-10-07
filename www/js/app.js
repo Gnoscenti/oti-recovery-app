@@ -5,6 +5,7 @@ import * as store from './store.js';
 import * as native from './native.js';
 import { CONFIG } from './config.js';
 import { el, append, icon, clear, ext, toast, copyText } from './dom.js';
+import { mountCohorts } from './cohorts/view.js';
 import { mountCommunity } from './community/view.js';
 import { createSupabaseApi } from './community/supabase.js';
 import { createDemoApi } from './community/demo.js';
@@ -13,7 +14,7 @@ import { createDemoApi } from './community/demo.js';
 /** @typedef {import('./calendar.js').Occurrence} Occurrence */
 /** @typedef {import('./phones.js').PhoneEntry} PhoneEntry */
 
-const VIEWS = ['home', 'community', 'calendar', 'phones', 'tools', 'more'];
+const VIEWS = ['home', 'community', 'calendar', 'phones', 'activity', 'more'];
 const TYPE_LABEL = { group: 'Support group', event: 'Event', training: 'Training', community: 'Community' };
 
 /** Current time; tests and screenshots can pin it with window.__OTI_NOW__. */
@@ -79,7 +80,13 @@ function navigate() {
   closeSheet();
   for (const v of VIEWS) {
     const sec = document.getElementById(`view-${v}`);
-    if (sec) sec.hidden = v !== view;
+    if (sec) {
+      sec.hidden = v !== view;
+      if (v !== view && ['community','calendar','activity'].includes(v)) {
+        if (v === 'community' && state.community) { state.community.destroy(); state.community = null; }
+        clear(sec);
+      }
+    }
   }
   document.querySelectorAll('.tab').forEach((t) => {
     const tab = /** @type {HTMLElement} */ (t);
@@ -107,17 +114,33 @@ function renderView(view) {
     return;
   }
   clear(sec);
+  if (view === 'calendar') {
+    sec.append(el('h1', {}, 'Calendar'), el('h2', {}, 'Default calendar'));
+    renderCalendar(sec);
+    const cohortRoot = el('section', { class: 'section', 'aria-label': 'Assigned cohort calendars' });
+    sec.append(cohortRoot);
+    mountCohorts(cohortRoot, communityContext().api, 'calendar');
+    return;
+  }
   /** @type {Record<string, (sec: HTMLElement) => void>} */
-  const renderers = { home: renderHome, calendar: renderCalendar, phones: renderPhones, tools: renderTools, more: renderMore };
+  const renderers = { home: renderHome, calendar: renderCalendar, phones: renderPhones, activity: renderTools, more: renderMore };
   renderers[view](sec);
 }
 
+/** @type {any} */
+let sharedContext = null;
 function communityContext() {
+  if (sharedContext) return sharedContext;
   const cfg = CONFIG.community;
   let api = null;
   if (IS_REVIEW || cfg.demo) api = createDemoApi({ now });
   else if (cfg.supabaseUrl && cfg.supabaseAnonKey) api = createSupabaseApi({ url: cfg.supabaseUrl, anonKey: cfg.supabaseAnonKey, pollSeconds: cfg.pollSeconds });
-  return {
+  if (api) api.onAuthChange(() => {
+    closeSheet();
+    for (const name of ['calendar', 'activity']) { const root = document.getElementById(`view-${name}`); if (root) clear(root); }
+    if (['calendar', 'activity'].includes(state.view)) renderAll();
+  });
+  return sharedContext = {
     api, now, review: IS_REVIEW || cfg.demo, orgEmail: state.content.org.email,
     onUnread: (/** @type {number} */ total) => {
       const badge = document.getElementById('community-badge');
@@ -218,16 +241,16 @@ function renderHome(sec) {
       heroArt()),
 
     sobriety
-      ? el('a', { class: 'day-chip', href: '#tools', 'aria-label': `${dayLabel(cal.daysSince(sobriety, at)).full} of recovery. Open tools.` },
+      ? el('a', { class: 'day-chip', href: '#activity', 'aria-label': `${dayLabel(cal.daysSince(sobriety, at)).full} of recovery. Open Activity.` },
           el('span', {}, el('strong', { class: 'num' }, dayLabel(cal.daysSince(sobriety, at)).full), el('span', { class: 'sub' }, `of recovery · since ${cal.fmtDateShort(cal.localMidnight(sobriety))}`)),
           el('span', { class: 'arrow' }, icon('chev')))
-      : el('a', { class: 'day-chip', href: '#tools' },
+      : el('a', { class: 'day-chip', href: '#activity' },
           el('span', {}, el('strong', {}, 'Count your days'), el('span', { class: 'sub' }, 'Private. Stays on this phone.')),
           el('span', { class: 'arrow' }, icon('chev'))),
 
     el('div', { class: 'quick' },
       el('a', { href: '#phones' }, icon('phone'), 'Help lines', el('span', { class: 'sub' }, '24/7 crisis & support')),
-      el('a', { href: '#tools', onClick: () => { state.pendingTool = 'urge'; } }, icon('wave'), 'Ride the urge', el('span', { class: 'sub' }, '15-minute timer')),
+      el('a', { href: '#activity', onClick: () => { state.pendingTool = 'urge'; } }, icon('wave'), 'Ride the urge', el('span', { class: 'sub' }, '15-minute timer')),
       el('a', { href: '#community' }, icon('msg'), 'Community', el('span', { class: 'sub' }, 'members only'))),
 
     el('section', { class: 'section', 'aria-labelledby': 'h-up' },
@@ -243,11 +266,7 @@ function renderHome(sec) {
       el('div', { class: 'section-head' }, el('h2', { id: 'h-stories' }, 'Stories of impact'), el('a', { href: '#more' }, 'More')),
       el('div', { class: 'card' }, quoteBlock(c.testimonials[0]))) : null,
 
-    el('section', { class: 'section', 'aria-labelledby': 'h-support' },
-      el('h2', { id: 'h-support' }, 'Support the mission'),
-      el('div', { class: 'row' },
-        ext(c.org.donateUrl, { class: 'btn primary' }, icon('heart'), 'Donate'),
-        ext(c.org.sponsorsUrl, { class: 'btn outline' }, 'Business sponsors'))),
+
   ]);
 }
 
@@ -552,10 +571,12 @@ function renderTools(sec) {
   append(sec, [
     sobrietyCounter(),
     nowSection,
-    el('section', { class: 'section', 'aria-labelledby': 'h-links' },
-      el('div', {}, el('h2', { id: 'h-links' }, 'Recovery communities & help'), el('p', { class: 'muted small' }, 'Different pathways work for different women. These are free or low-cost.')),
-      el('div', { class: 'link-list' }, c.recoveryLinks.map((/** @type {any} */ l) => linkItem(l.label, l.url, l.blurb)))),
+
   ]);
+
+  const cohortRoot = el('section', { class: 'section' });
+  sec.prepend(cohortRoot);
+  mountCohorts(cohortRoot, communityContext().api, 'activity');
 
   // A Home shortcut asked for a specific tool: open it right away, with the tool grid in view.
   if (state.pendingTool) {
@@ -766,8 +787,6 @@ function renderMore(sec) {
     el('section', { class: 'section', 'aria-labelledby': 'h-involved' },
       el('h2', { id: 'h-involved' }, 'Get involved'),
       el('div', { class: 'row' },
-        ext(c.org.donateUrl, { class: 'btn primary' }, icon('heart'), 'Donate'),
-        ext(c.org.sponsorsUrl, { class: 'btn outline' }, 'Business sponsors'),
         ext(c.org.contactUrl, { class: 'btn outline' }, 'Volunteer / contact')),
       el('div', { class: 'social' }, c.org.social.map((/** @type {any} */ s) => ext(s.url, {}, s.label)))),
 
@@ -819,9 +838,10 @@ async function boot() {
   navigate();
   refreshRemoteContent();
 
-  if ('serviceWorker' in navigator && !native.isNative() && location.protocol === 'https:') {
+  if ('serviceWorker' in navigator && !native.isNative() && window.isSecureContext) {
     navigator.serviceWorker.register('sw.js').catch(() => { /* optional */ });
   }
 }
 
 boot();
+

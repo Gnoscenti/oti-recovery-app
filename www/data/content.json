@@ -1,6 +1,6 @@
 {
   "$schema": "./content.schema.json",
-  "version": "2026-09-25",
+  "version": "2026-10-06",
   "org": {
     "name": "Over the Influence Recovery",
     "shortName": "OTI",
@@ -11,20 +11,35 @@
     "email": "info@otirecovery.org",
     "phone": null,
     "website": "https://www.otirecovery.org",
-    "donateUrl": "https://www.otirecovery.org/donate",
     "contactUrl": "https://www.otirecovery.org/contact",
-    "sponsorsUrl": "https://www.otirecovery.org/business-sponsors",
     "newsUrl": "https://www.otirecovery.org/newsandnewsletters",
     "social": [
-      { "label": "Instagram", "url": "https://www.instagram.com/otirecovery/" },
-      { "label": "Facebook", "url": "https://www.facebook.com/OTIRecovery/" },
-      { "label": "YouTube", "url": "https://www.youtube.com/@otirecovery" },
-      { "label": "TikTok", "url": "https://www.tiktok.com/@otirecovery" },
-      { "label": "LinkedIn", "url": "https://www.linkedin.com/company/otirecovery/" },
-      { "label": "X", "url": "https://x.com/OTIRecovery" }
+      {
+        "label": "Instagram",
+        "url": "https://www.instagram.com/otirecovery/"
+      },
+      {
+        "label": "Facebook",
+        "url": "https://www.facebook.com/OTIRecovery/"
+      },
+      {
+        "label": "YouTube",
+        "url": "https://www.youtube.com/@otirecovery"
+      },
+      {
+        "label": "TikTok",
+        "url": "https://www.tiktok.com/@otirecovery"
+      },
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/company/otirecovery/"
+      },
+      {
+        "label": "X",
+        "url": "https://x.com/OTIRecovery"
+      }
     ]
   },
-
   "programs": [
     {
       "id": "thrive",
@@ -35,7 +50,10 @@
         "Weekly support groups",
         "A monthly Thoughtful & Thrive (TnT) event"
       ],
-      "cta": { "label": "Enroll in T.H.R.I.V.E.", "url": "https://www.otirecovery.org/contact" }
+      "cta": {
+        "label": "Enroll in T.H.R.I.V.E.",
+        "url": "https://www.otirecovery.org/contact"
+      }
     },
     {
       "id": "group",
@@ -46,7 +64,10 @@
         "Talk openly and honestly about your feelings",
         "Connect with others with similar struggles and goals"
       ],
-      "cta": { "label": "Register once to attend any meeting", "url": "https://us02web.zoom.us/meeting/register/YqO6ErZFQnWKGki4EQAqlw" }
+      "cta": {
+        "label": "Register once to attend any meeting",
+        "url": "https://us02web.zoom.us/meeting/register/YqO6ErZFQnWKGki4EQAqlw"
+      }
     },
     {
       "id": "coaching",
@@ -57,67 +78,62 @@
         "Scheduled at a time that works for you",
         "A pace of recovery tailored to your life"
       ],
-      "cta": { "label": "Ask about coaching", "url": "https://www.otirecovery.org/contact" }
+      "cta": {
+        "label": "Ask about coaching",
+        "url": "https://www.otirecovery.org/contact"
+      }
     },
     {
       "id": "tnt",
       "name": "Thoughtful & Thrive (TnT) events",
       "summary": "Monthly events focused on giving back or trying something new: homeless care bags, volunteering, painting, ferry rides, arts and crafts, and more.",
       "details": [],
-      "cta": { "label": "See upcoming events", "url": "#calendar" }
+      "cta": {
+        "label": "See upcoming events",
+        "url": "#calendar"
+      }
     }
   ],
-
   "events": [
     {
       "id": "monday-group",
       "title": "Online Recovery Support Group",
       "type": "group",
       "description": "Women-only online recovery support group. Register once on Zoom to attend any meeting. Confidential and free.",
-      "location": { "name": "Zoom (online)", "url": "https://us02web.zoom.us/j/87980541961?pwd=Y566WTF9MuKQQQT9NqYRa9nxufntG4.1" },
+      "location": {
+        "name": "Zoom (online)",
+        "url": "https://us02web.zoom.us/j/87980541961?pwd=Y566WTF9MuKQQQT9NqYRa9nxufntG4.1"
+      },
       "start": "2026-01-05T19:00",
       "end": "2026-01-05T20:00",
       "timezone": "America/Los_Angeles",
-      "recurrence": { "freq": "weekly", "byDay": ["MO"] },
+      "recurrence": {
+        "freq": "weekly",
+        "byDay": [
+          "MO"
+        ]
+      },
       "links": [
-        { "label": "Register (once)", "url": "https://us02web.zoom.us/meeting/register/YqO6ErZFQnWKGki4EQAqlw", "kind": "register" },
-        { "label": "Join Zoom", "url": "https://us02web.zoom.us/j/87980541961?pwd=Y566WTF9MuKQQQT9NqYRa9nxufntG4.1", "kind": "join" }
+        {
+          "label": "Register (once)",
+          "url": "https://us02web.zoom.us/meeting/register/YqO6ErZFQnWKGki4EQAqlw",
+          "kind": "register"
+        },
+        {
+          "label": "Join Zoom",
+          "url": "https://us02web.zoom.us/j/87980541961?pwd=Y566WTF9MuKQQQT9NqYRa9nxufntG4.1",
+          "kind": "join"
+        }
       ],
-      "reminder": { "weekday": "MO", "hour": 18, "minute": 30, "title": "OTI support group tonight", "body": "The Online Recovery Support Group starts at 7:00 PM. You've got this." }
-    },
-    {
-      "id": "here-to-thrive-2026",
-      "title": "Here to Thrive 2026: An Evening of Impact and Vision",
-      "type": "event",
-      "description": "Celebrating mothers who thrive and the community that makes it possible. Dinner, dessert, and an inspiring evening of community, connection, and impact. Guest tickets $55. Dinner party attire (casual to fancy). Seating is limited.",
-      "location": { "name": "KPBS Community Engagement Center", "address": "San Diego, CA" },
-      "start": "2026-09-25T18:00",
-      "end": "2026-09-25T21:00",
-      "timezone": "America/Los_Angeles",
-      "recurrence": null,
-      "image": "assets/here-to-thrive.jpg",
-      "links": [
-        { "label": "Register / tickets", "url": "https://donorbox.org/events/955829/steps/choose_tickets", "kind": "register" },
-        { "label": "Event page", "url": "https://www.otirecovery.org/heretothrive", "kind": "info" }
-      ]
-    },
-    {
-      "id": "prcb-sept-2026",
-      "title": "Peer Recovery Coach Blueprint (1-week cohort)",
-      "type": "training",
-      "description": "Empowering peer supporters in SUD recovery with tools, confidence, and certification-aligned skills. 7.5 CE hours. Mon–Fri, 3:30–5:00 PM. For peer support specialists, individuals in recovery, and family members.",
-      "location": { "name": "Online" },
-      "start": "2026-09-14T15:30",
-      "end": "2026-09-14T17:00",
-      "timezone": "America/Los_Angeles",
-      "recurrence": { "freq": "weekly", "byDay": ["MO", "TU", "WE", "TH", "FR"], "until": "2026-09-18" },
-      "links": [
-        { "label": "Enroll", "url": "https://otirecoverytraining.thinkific.com/products/courses/peerrecoverycoachblueprint", "kind": "register" },
-        { "label": "Agency enrollment form", "url": "https://forms.gle/u7o6ENtbwFWsGAtw8", "kind": "info" }
-      ]
+      "reminder": {
+        "weekday": "MO",
+        "hour": 18,
+        "minute": 0,
+        "title": "Event reminder",
+        "body": "An event on your calendar starts in one hour. Open the app for details."
+      }
     }
   ],
-
   "unscheduled": [
     {
       "title": "Thoughtful & Thrive (TnT) event",
@@ -131,53 +147,20 @@
       "url": "https://otirecoverytraining.thinkific.com/products/courses/digitalliteracy101"
     }
   ],
-
   "phones": [
     {
       "id": "988",
       "name": "988 Suicide & Crisis Lifeline",
       "number": "988",
       "display": "988",
-      "sms": { "number": "988" },
+      "sms": {
+        "number": "988"
+      },
       "hours": "24/7",
       "languages": "English, Spanish, 240+ via interpretation",
       "category": "crisis",
       "description": "Call or text for any emotional crisis, thoughts of suicide, or substance use crisis. Free and confidential.",
       "url": "https://988lifeline.org"
-    },
-    {
-      "id": "samhsa",
-      "name": "SAMHSA National Helpline",
-      "number": "18006624357",
-      "display": "1-800-662-4357",
-      "hours": "24/7",
-      "languages": "English, Spanish",
-      "category": "crisis",
-      "description": "Free, confidential treatment referral and information service for individuals and families facing substance use or mental health disorders.",
-      "url": "https://www.samhsa.gov/find-help/helplines/national-helpline"
-    },
-    {
-      "id": "acl",
-      "name": "San Diego Access & Crisis Line",
-      "number": "18887247240",
-      "display": "(888) 724-7240",
-      "hours": "24/7",
-      "languages": "English, Spanish, interpreters available",
-      "category": "local",
-      "description": "Immediate support from a counselor on crisis intervention, suicide prevention, mental health referrals, and alcohol and drug support services in San Diego County. TDD/TTY 711.",
-      "url": "https://www.sandiegocounty.gov/content/sdc/hhsa/programs/bhs/ACL.html"
-    },
-    {
-      "id": "crisis-text",
-      "name": "Crisis Text Line",
-      "number": null,
-      "display": "Text HOME to 741741",
-      "sms": { "number": "741741", "body": "HOME" },
-      "hours": "24/7",
-      "languages": "English, Spanish",
-      "category": "crisis",
-      "description": "Text with a trained crisis counselor.",
-      "url": "https://www.crisistextline.org"
     },
     {
       "id": "never-use-alone",
@@ -189,141 +172,39 @@
       "category": "substance",
       "description": "If you or someone you love is going to use, don't use alone. An operator stays on the line and sends help if you stop responding. No judgment.",
       "url": "https://neverusealone.com"
-    },
-    {
-      "id": "aa-sd",
-      "name": "Alcoholics Anonymous, San Diego Central Office",
-      "number": "16192658762",
-      "display": "(619) 265-8762",
-      "hours": "24/7 phone line",
-      "languages": "English",
-      "category": "substance",
-      "description": "Talk to a sober member and find local meetings. Office: 7075 Mission Gorge Rd, Suite B, San Diego.",
-      "url": "https://aasandiego.org"
-    },
-    {
-      "id": "na-sd",
-      "name": "Narcotics Anonymous, San Diego helpline",
-      "number": "16195841007",
-      "display": "(619) 584-1007",
-      "hours": "Helpline",
-      "languages": "English (Spanish: 619-546-0774)",
-      "category": "substance",
-      "description": "Speak with a recovering addict and find local NA meetings.",
-      "url": "https://sandiegona.org"
-    },
-    {
-      "id": "wfs",
-      "name": "Women for Sobriety",
-      "number": "12155368026",
-      "display": "215-536-8026",
-      "hours": "Office hours (ET)",
-      "languages": "English",
-      "category": "substance",
-      "description": "Peer support program for women overcoming substance use disorders. Online and in-person meetings.",
-      "url": "https://womenforsobriety.org"
-    },
-    {
-      "id": "maternal-mh",
-      "name": "National Maternal Mental Health Hotline",
-      "number": "18338526262",
-      "display": "1-833-852-6262",
-      "sms": { "number": "18338526262" },
-      "hours": "24/7",
-      "languages": "English, Spanish, interpreters available",
-      "category": "moms",
-      "description": "Free, confidential support before, during, and after pregnancy. Call or text.",
-      "url": "https://mchb.hrsa.gov/national-maternal-mental-health-hotline"
-    },
-    {
-      "id": "psi",
-      "name": "Postpartum Support International HelpLine",
-      "number": "18009444773",
-      "display": "1-800-944-4773",
-      "sms": { "number": "18009444773", "body": "Help" },
-      "hours": "Messages returned 8 AM–11 PM ET, every day (not a crisis line)",
-      "languages": "English (press 2), Spanish (press 1; Spanish text 971-203-7773)",
-      "category": "moms",
-      "description": "Support and local resources for perinatal mood and anxiety disorders.",
-      "url": "https://postpartum.net/get-help/psi-helpline/"
-    },
-    {
-      "id": "nami",
-      "name": "NAMI HelpLine",
-      "number": "18009506264",
-      "display": "1-800-950-6264",
-      "sms": { "number": "62640", "body": "NAMI" },
-      "hours": "Mon–Fri, 10 AM–10 PM ET",
-      "languages": "English, Spanish",
-      "category": "moms",
-      "description": "Information, resource referrals, and support for people living with a mental health condition and their families. Not a crisis line.",
-      "url": "https://www.nami.org/nami-helpline/"
-    },
-    {
-      "id": "ndvh",
-      "name": "National Domestic Violence Hotline",
-      "number": "18007997233",
-      "display": "1-800-799-7233",
-      "sms": { "number": "88788", "body": "START" },
-      "hours": "24/7",
-      "languages": "English, Spanish, 200+ via interpretation",
-      "category": "safety",
-      "description": "Confidential support, safety planning, and local resources. Call, or text START to 88788.",
-      "url": "https://www.thehotline.org"
-    },
-    {
-      "id": "poison",
-      "name": "Poison Control",
-      "number": "18002221222",
-      "display": "1-800-222-1222",
-      "hours": "24/7",
-      "languages": "English, Spanish, interpreters available",
-      "category": "safety",
-      "description": "Free, expert help with poisoning or an overdose that is not yet an emergency. If someone is unresponsive or not breathing, call 911.",
-      "url": "https://www.poison.org"
-    },
-    {
-      "id": "211",
-      "name": "2-1-1 San Diego",
-      "number": "211",
-      "display": "211",
-      "hours": "24/7",
-      "languages": "200+ languages",
-      "category": "local",
-      "description": "Free, confidential connection to community, health, and disaster resources: food, housing, childcare, health coverage, and more.",
-      "url": "https://211sandiego.org"
     }
   ],
-
   "phoneCategories": [
-    { "id": "crisis", "label": "Crisis lines", "blurb": "If you are in immediate danger, call 911." },
-    { "id": "substance", "label": "Substance use support" },
-    { "id": "moms", "label": "Moms & mental health" },
-    { "id": "safety", "label": "Safety" },
-    { "id": "local", "label": "San Diego local" }
+    {
+      "id": "crisis",
+      "label": "Crisis lines",
+      "blurb": "If you are in immediate danger, call 911."
+    },
+    {
+      "id": "substance",
+      "label": "Substance use support"
+    },
+    {
+      "id": "moms",
+      "label": "Moms & mental health"
+    },
+    {
+      "id": "safety",
+      "label": "Safety"
+    },
+    {
+      "id": "local",
+      "label": "San Diego local"
+    }
   ],
-
-  "recoveryLinks": [
-    { "label": "SMART Recovery", "url": "https://smartrecovery.org", "blurb": "Science-based, self-empowering mutual support meetings (online and in person)." },
-    { "label": "Women for Sobriety", "url": "https://womenforsobriety.org", "blurb": "The New Life Program, by and for women." },
-    { "label": "SHE RECOVERS Foundation", "url": "https://sherecovers.org", "blurb": "Online community and free gatherings for women in or seeking recovery." },
-    { "label": "Recovery Dharma", "url": "https://recoverydharma.org", "blurb": "Peer-led, Buddhist-inspired recovery meetings." },
-    { "label": "In The Rooms", "url": "https://www.intherooms.com", "blurb": "Free online recovery meetings, all pathways, around the clock." },
-    { "label": "Alcoholics Anonymous (San Diego)", "url": "https://aasandiego.org", "blurb": "Meeting finder for San Diego County." },
-    { "label": "Narcotics Anonymous (San Diego)", "url": "https://sandiegona.org/find-a-meeting/", "blurb": "Meeting finder for San Diego & Imperial Counties." },
-    { "label": "FindTreatment.gov", "url": "https://findtreatment.gov", "blurb": "Confidential SAMHSA locator for treatment programs, including those for pregnant and postpartum women." },
-    { "label": "San Diego County Behavioral Health Services", "url": "https://www.sandiegocounty.gov/content/sdc/hhsa/programs/bhs.html", "blurb": "County mental health and substance use services." },
-    { "label": "Al-Anon Family Groups", "url": "https://al-anon.org", "blurb": "Support for families and friends of people with alcohol problems." },
-    { "label": "Nar-Anon Family Groups", "url": "https://www.nar-anon.org", "blurb": "Support for families and friends of people with drug problems." }
-  ],
-
+  "recoveryLinks": [],
   "training": [
     {
       "id": "prcb",
       "name": "Peer Recovery Coach Blueprint",
       "series": "SUD Peer Support",
       "ceHours": "7.5",
-      "schedule": "Next cohort TBA · 1-week format, Mon–Fri 3:30–5:00 PM",
+      "schedule": "Next cohort TBA \u00b7 1-week format, Mon\u2013Fri 3:30\u20135:00 PM",
       "audience": "Peer support specialists, individuals in recovery, and family members",
       "outcome": "Skills to thrive in recovery spaces and support others in recovery. Aligned with California Medi-Cal Peer Support Specialist standards.",
       "url": "https://otirecoverytraining.thinkific.com/products/courses/peerrecoverycoachblueprint"
@@ -343,14 +224,13 @@
       "name": "Digital Literacy 101",
       "series": "Digital Skills",
       "ceHours": "1",
-      "schedule": "Saturdays 10:00 AM · next date coming soon",
+      "schedule": "Saturdays 10:00 AM \u00b7 next date coming soon",
       "audience": "Peer support specialists and participants who want to strengthen digital confidence",
       "outcome": "Organize digital files, navigate browsers, use free productivity tools, and recognize common online scams.",
       "url": "https://otirecoverytraining.thinkific.com/products/courses/digitalliteracy101"
     }
   ],
   "trainingNote": "Over the Influence Recovery is CalMHSA-approved to provide Continuing Education (CE) hours for California's Certified Medi-Cal Peer Support Specialists (CMPSS). Courses are open statewide.",
-
   "testimonials": [
     {
       "name": "Belinda",
@@ -358,12 +238,27 @@
       "quote": "I've been through countless programs, but OTI has helped me more than all the others combined. Here, I finally feel worth, support, and real growth. I'm so grateful for my peer coach and the close-knit community that has changed my life."
     }
   ],
-
   "newsletters": [
-    { "title": "Thriving Together: Celebrating Growth, Joy, and Resilience", "url": "https://www.otirecovery.org/_files/ugd/727706_5aebb8391dc241eaba4e7c2667df94af.pdf", "latest": true },
-    { "title": "Springing Into Renewal", "url": "https://www.otirecovery.org/_files/ugd/727706_3c8bd3089d9d445b81b74a1374a73f0e.pdf" },
-    { "title": "The Spark of Our Recovery Movement", "url": "https://www.otirecovery.org/_files/ugd/727706_12b6d50a4a87463db15a94a618841546.pdf" },
-    { "title": "Honoring the Journey", "url": "https://www.otirecovery.org/_files/ugd/727706_345b9bf799a24cbab0f5cc7712105d3f.pdf" },
-    { "title": "Where It All Began", "url": "https://www.otirecovery.org/_files/ugd/727706_aee4571383034c47b43a74970aa6d80b.pdf" }
+    {
+      "title": "Thriving Together: Celebrating Growth, Joy, and Resilience",
+      "url": "https://www.otirecovery.org/_files/ugd/727706_5aebb8391dc241eaba4e7c2667df94af.pdf",
+      "latest": true
+    },
+    {
+      "title": "Springing Into Renewal",
+      "url": "https://www.otirecovery.org/_files/ugd/727706_3c8bd3089d9d445b81b74a1374a73f0e.pdf"
+    },
+    {
+      "title": "The Spark of Our Recovery Movement",
+      "url": "https://www.otirecovery.org/_files/ugd/727706_12b6d50a4a87463db15a94a618841546.pdf"
+    },
+    {
+      "title": "Honoring the Journey",
+      "url": "https://www.otirecovery.org/_files/ugd/727706_345b9bf799a24cbab0f5cc7712105d3f.pdf"
+    },
+    {
+      "title": "Where It All Began",
+      "url": "https://www.otirecovery.org/_files/ugd/727706_aee4571383034c47b43a74970aa6d80b.pdf"
+    }
   ]
 }

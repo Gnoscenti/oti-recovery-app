@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "title": "OTI: 30 Days of Motherhood, Serenity, Recovery and Healing",
+  "status": "reviewable_content_pack",
+  "created_on": "2026-10-06",
+  "schedule": {
+    "length_days": 30,
+    "day_field": "suggested_sequence",
+    "automatic_rotation_enabled": false,
+    "repeat_after_day_30": false,
+    "spiritual_content": "Flagged for participant choice; no preference filter implemented by this file."
+  },
+  "provenance": {
+    "user_supplied_entries": 4,
+    "original_draft_entries": 26,
+    "copied_publisher_or_api_entries": 0,
+    "note": "Days 1–4 preserve the user’s wording. Days 5–30 are newly written drafts for coach review. No publisher or API endorsement is implied."
+  },
+  "research_sources": [
+    {
+      "id": "S01",
+      "name": "Hazelden: She Recovers Every Day announcement",
+      "url": "https://www.hazeldenbettyford.org/newsroom/press-release/new-meditation-book-reduces-stigma",
+      "use": "Research on women’s recovery, nonjudgmental encouragement and self-compassion; no book passages copied."
+    },
+    {
+      "id": "S02",
+      "name": "Hazelden: Make Self-Care in Recovery a Priority",
+      "url": "https://www.hazeldenbettyford.org/articles/10-ways-to-make-selfcare-in-recovery-a-priority",
+      "use": "Research on mothers in recovery, rest, connection and self-care; entries are original, not quotations."
+    },
+    {
+      "id": "S03",
+      "name": "SAMHSA: Trauma-Informed Approaches and Programs",
+      "url": "https://www.samhsa.gov/mental-health/trauma-violence/trauma-informed-approaches-programs",
+      "use": "Research on safety, choice, empowerment and respect. No treatment or efficacy claims."
+    },
+    {
+      "id": "S04",
+      "name": "APIRobots: New Affirmations API documentation",
+      "url": "https://apirobots.pro/apis/new-affirmations-api/",
+      "use": "Verified category endpoints and spiritual/health/gratitude categories. No subscription, API connection or API content used."
+    }
+  ],
+  "affirmations": [
+    {
+      "id": "100",
+      "day": 1,
+      "category": "trauma_healing",
+      "text": "What happened to me was not my fault. I am reclaiming my sense of safety one day at a time, and my healing journey deserves patience and respect",
+      "spiritual_element": false,
+      "origin": "user_supplied"
+    },
+    {
+      "id": "101",
+      "day": 2,
+      "category": "trauma_healing",
+      "text": "My past does not dictate my future as a mother or as a woman. I am safe in this moment.",
+      "spiritual_element": false,
+      "origin": "user_supplied"
+    },
+    {
+      "id": "102",
+      "day": 3,
+      "category": "sobriety",
+      "text": "This craving is temporary. I have the strength to weather this storm.",
+      "spiritual_element": false,
+      "origin": "user_supplied"
+    },
+    {
+      "id": "103",
+      "day": 4,
+      "category": "spiritual_motherhood",
+      "text": "Higher Power, grant me the patience to be the gentle mother my children need today.",
+      "spiritual_element": true,
+      "origin": "user_supplied"
+    },
+    {
+      "id": "104",
+      "day": 5,
+      "category": "self_compassion",
+      "text": "I can speak to myself with kindness while I learn a different way to live.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "105",
+      "day": 6,
+      "category": "motherhood",
+      "text": "I do not have to be a perfect mother to offer my children love, attention, and repair.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "106",
+      "day": 7,
+      "category": "serenity",
+      "text": "I can pause before I respond. A small moment of quiet can help me choose my next step.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "107",
+      "day": 8,
+      "category": "spiritual_recovery",
+      "text": "Higher Power, help me receive support instead of carrying every burden alone.",
+      "spiritual_element": true,
+      "origin": "original_draft"
+    },
+    {
+      "id": "108",
+      "day": 9,
+      "category": "boundaries",
+      "text": "I am allowed to set boundaries that protect my recovery, my rest, and my dignity.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "109",
+      "day": 10,
+      "category": "sobriety",
+      "text": "I can tell a trusted person when I am struggling. Asking for support is part of caring for myself.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "110",
+      "day": 11,
+      "category": "trauma_healing",
+      "text": "My feelings deserve to be heard. I can share them at a pace that respects my boundaries.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "111",
+      "day": 12,
+      "category": "gratitude",
+      "text": "I can notice one small kindness today without pretending that everything is easy.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "112",
+      "day": 13,
+      "category": "motherhood",
+      "text": "When I make a mistake, I can take responsibility, apologize, and practice a more caring response.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "113",
+      "day": 14,
+      "category": "spiritual_motherhood",
+      "text": "Higher Power, guide my words toward gentleness and help me listen to my children with care.",
+      "spiritual_element": true,
+      "origin": "original_draft"
+    },
+    {
+      "id": "114",
+      "day": 15,
+      "category": "self_compassion",
+      "text": "Rest does not have to be earned through exhaustion. My needs matter, too.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "115",
+      "day": 16,
+      "category": "sobriety",
+      "text": "I can focus on the next manageable choice rather than solve my whole future today.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "116",
+      "day": 17,
+      "category": "community_support",
+      "text": "I deserve support without shame. I can choose people who respect my healing.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "117",
+      "day": 18,
+      "category": "serenity",
+      "text": "I can recognize what is within my control and let that guide where I place my energy today.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "118",
+      "day": 19,
+      "category": "trauma_healing",
+      "text": "Healing has its own pace. A difficult day does not erase the care I have given myself.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "119",
+      "day": 20,
+      "category": "spiritual_recovery",
+      "text": "Higher Power, help me meet uncertainty with patience and accept the help available to me.",
+      "spiritual_element": true,
+      "origin": "original_draft"
+    },
+    {
+      "id": "120",
+      "day": 21,
+      "category": "motherhood",
+      "text": "Small moments of connection count. I can offer my children my attention without having every answer.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "121",
+      "day": 22,
+      "category": "boundaries",
+      "text": "I can say no to what overwhelms me and yes to what supports my recovery.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "122",
+      "day": 23,
+      "category": "gratitude",
+      "text": "I can appreciate a step forward without comparing my journey to anyone else’s.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "123",
+      "day": 24,
+      "category": "sobriety",
+      "text": "An urge is a feeling I can name. I can pause, use my recovery tools, and reach out for support.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "124",
+      "day": 25,
+      "category": "spiritual_motherhood",
+      "text": "Higher Power, remind me that caring for myself can help me show up with more patience and love.",
+      "spiritual_element": true,
+      "origin": "original_draft"
+    },
+    {
+      "id": "125",
+      "day": 26,
+      "category": "self_compassion",
+      "text": "I am more than my hardest chapter. My worth does not depend on a flawless day.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "126",
+      "day": 27,
+      "category": "trauma_healing",
+      "text": "I can choose how much of my story to share. My experiences do not belong to everyone.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "127",
+      "day": 28,
+      "category": "motherhood",
+      "text": "I can make room for both my children’s feelings and my own, with care and appropriate support.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "128",
+      "day": 29,
+      "category": "serenity",
+      "text": "Today I can make space for a breath, a boundary, and one act of kindness toward myself.",
+      "spiritual_element": false,
+      "origin": "original_draft"
+    },
+    {
+      "id": "129",
+      "day": 30,
+      "category": "spiritual_recovery",
+      "text": "Higher Power, help me honor the steps I have taken and approach tomorrow with hope and humility.",
+      "spiritual_element": true,
+      "origin": "original_draft"
+    }
+  ]
+}
